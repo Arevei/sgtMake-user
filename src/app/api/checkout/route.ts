@@ -6,6 +6,7 @@ import type { NextRequest } from "next/server"
 import { getImageThumbnail } from "@/lib/cart-utils"
 import type { CheckoutItemProps } from "@/lib/types/types"
 import { getProductWithImages } from "../payment/helper"
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
