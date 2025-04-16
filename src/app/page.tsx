@@ -43,7 +43,7 @@ export default async function page() {
         viewAll: makeRowViewAll(row),
       };
     }),
-  );
+  );    
 
   return (
     <div className=" space-y-14">
