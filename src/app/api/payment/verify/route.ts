@@ -3,7 +3,8 @@ import crypto from "crypto"
 import { error400, error500, success200 } from "@/lib/utils"
 import { createPayment, updateOrder } from "../helper"
 import { db } from "@/lib/prisma"
-import Razorpay from "razorpay"
+import { razorpay } from "../route"
+import { headers } from "next/headers"
 
 const getPaymentVia = (method: string, payload: any) => {
   if (method === "netbanking") return payload["bank"]
@@ -14,10 +15,6 @@ const getPaymentVia = (method: string, payload: any) => {
   } else return null
 }
 
-const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_SECRET!,
-})
 
 export async function POST(req: NextRequest) {
   try {
@@ -41,10 +38,9 @@ export async function POST(req: NextRequest) {
     shasum.update(`${data.order_id}|${data.payment_id}`)
     const digest = shasum.digest("hex")
 
-    console.log(req.headers.get("x-razorpay-signature"))
-    console.log(digest)
 
-    if (digest === req.headers.get("x-razorpay-signature")) {
+
+    if (digest === headers().get("x-razorpay-signature")) {
       console.log("payment verifed")
       const successOrder = await updateOrder(order_id)
       console.log(successOrder)
