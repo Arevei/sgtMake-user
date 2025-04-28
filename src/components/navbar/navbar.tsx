@@ -18,6 +18,7 @@ import { authOptions } from "@/lib/auth";
 // import { getMarqueeOffers } from "@/lib/api/get-marquee-offers";
 import Image from "next/image";
 import Navlist from "./navlist";
+import LinkButton from "../shared/link-button";
 
 export default async function Navbar() {
   const navItems = await getNavbarCategories();
@@ -76,16 +77,15 @@ export default async function Navbar() {
               {session ? (
                 <Profile session={session} />
               ) : (
-                <Link href={"/authentication"}>
-                <Button
+                <LinkButton
+                  href="/authentication"
                   disableRipple
                   className="min-w-0 bg-orange-500 hover:text-orange-600 text-white px-4 py-2 rounded-md"
                   radius="sm"
                   variant="light"
                 >
                   Sign in
-                </Button>
-                  </Link>
+                </LinkButton>
               )}
             </div>
 
