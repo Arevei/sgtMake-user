@@ -6,10 +6,15 @@ import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 const PrivateLayout = async ({ children }: LayoutProps) => {
   const session = await getServerSession(authOptions);
-  if (!session?.user) redirect(`/authentication`);
+  if (!session?.user) {
+    const headersList = headers();
+    const currentUrl = headersList.get("x-url") || "";
+    redirect(`/authentication?callbackUrl=${encodeURIComponent(currentUrl)}`);
+  }
   return (
     <>
       <ShowPrivateNavbar>

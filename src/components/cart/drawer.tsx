@@ -48,9 +48,6 @@ const Drawer = () => {
   }, [session, setCartItems, cartItemsSVR?.item]);
 
   const handleCheckout = () => {
-    if (!session?.user) {
-      return router.push("/authentication");
-    }
     router.push("/checkout");
   };
 

@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  const session = request.cookies.get("next-auth.session-token");
-  if (!session) {
-    // Set callbackUrl for redirect after login success
-    response.cookies.set("originCallbackUrl", request.nextUrl.pathname);
-  }
+
+  // Attach current pathname as x-url header
+  response.headers.set("x-url", request.nextUrl.pathname + request.nextUrl.search);
 
   return response;
 }
 
+
 export const config = {
-  matcher: ["/orders:path*", "/checkout:path*", "/account:path*"],
+  matcher: ["/orders/:path*", "/checkout/:path*", "/account/:path*", "/service/:path*"],
 };

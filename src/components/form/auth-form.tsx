@@ -12,7 +12,7 @@ import { signIn } from "next-auth/react"
 import { useCreateAccount } from "@/api-hooks/user/create-user-account"
 import type { UserResProps } from "@/lib/types/types"
 import { deleteCookie, getCookie } from "cookies-next"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@nextui-org/button"
 import { Input } from "@nextui-org/input"
 
@@ -35,8 +35,8 @@ export function AuthForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("signin")
   const router = useRouter()
-
-  const callbackUrl = getCookie("originCallbackUrl") // Get callback url from cookie to redirect after login success.
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") // Get callback url from cookie to redirect after login success.
 
   // Create separate forms for signin and signup
   const signinForm = useForm<z.infer<typeof SignInSchema>>({
