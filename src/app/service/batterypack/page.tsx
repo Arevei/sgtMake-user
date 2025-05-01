@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import type React from "react"
 
 import { Upload, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSession } from "next-auth/react"
+import { SubmissionProgress } from "@/components/submission-progress"
+import { useFormSubmission } from "@/hooks/use-form-submission"
+import { ProtectedButton } from "@/components/protected-button"
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 const ALLOWED_FILE_TYPES = ["application/pdf", "application/vnd.ms-excel", "application/msword", "image/", "model/step"]
@@ -33,34 +36,35 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-export default function BatteryPackForm() {
+interface BatteryPackFormProps {
+  onFormSubmit?: (formData: any) => Promise<void>
+}
+
+export default function BatteryPackForm(props: BatteryPackFormProps) {
   const [file, setFile] = useState<File | null>(null)
-  const [fileUploadStatus, setFileUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
-  const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
-  const [uploadedFileData, setUploadedFileData] = useState<{
-    url: string
-    public_id?: string
-    name: string
-    type: string
-    size?: number
-  } | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [formSuccess, setFormSuccess] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const session = useSession()
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
     trigger,
+    getValues,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   })
-  const session = useSession();
 
   const FormFields = [
     { name: "cellBrand", label: "Cell Brand" },
-    { name: "seriesConfig", label: "Series Config" }, 
+    { name: "seriesConfig", label: "Series Config" },
     { name: "parallelConfig", label: "Parallel Config" },
     { name: "normalDischarge", label: "Normal Discharge" },
     { name: "peakDischarge", label: "Peak Discharge" },
@@ -70,95 +74,154 @@ export default function BatteryPackForm() {
     { name: "bmsChoice", label: "BMS Choice" },
     { name: "modulusCount", label: "No. of Modules" },
   ]
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const uploadedFile = e.target.files[0]
+      const selectedFile = e.target.files[0]
 
       // Check file type
       const isAllowedType = ALLOWED_FILE_TYPES.some(
-        (type) => uploadedFile.type.includes(type) || (type.endsWith("/") && uploadedFile.type.startsWith(type)),
+        (type) => selectedFile.type.includes(type) || (type.endsWith("/") && selectedFile.type.startsWith(type)),
       )
 
-      if (!isAllowedType || uploadedFile.size > MAX_FILE_SIZE) {
+      if (!isAllowedType || selectedFile.size > MAX_FILE_SIZE) {
         setErrorMessage("Invalid file type or size exceeds 100MB")
         return
       }
 
-      setFile(uploadedFile)
-      setFileUploadStatus("uploading")
+      setFile(selectedFile)
       setErrorMessage(null)
-
-      // Upload the file to Cloudinary
-      try {
-        const formData = new FormData()
-        formData.append("file", uploadedFile)
-
-        const response = await fetch("/api/service/upload", {
-          method: "POST",
-          body: formData,
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || "Error uploading file")
-        }
-
-        const data = await response.json()
-        setUploadedFileData({
-          url: data.url,
-          public_id: data.public_id,
-          name: data.name,
-          type: data.type,
-          size: data.size,
-        })
-        setFileUploadStatus("success")
-      } catch (error) {
-        console.error("Error uploading file:", error)
-        setFileUploadStatus("error")
-        setErrorMessage(error instanceof Error ? error.message : "Error uploading file")
-      }
     }
   }
+
+  const submitFormToServer = async (formData: any, fileData: any) => {
+    const response = await fetch("/api/service/battery-inquiry", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...formData,
+        file: fileData,
+      }),
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || "Error submitting form")
+    }
+
+    return await response.json()
+  }
+
+  const {
+    submissionStep,
+    handleSubmit: handleFormSubmit,
+    handleAuthSuccess,
+    error,
+    isSubmitting,
+  } = useFormSubmission({
+    onSubmitForm: submitFormToServer,
+    onSuccess: () => {
+      setFormSuccess(true)
+    },
+  })
 
   const onSubmit = async (data: FormData) => {
-    setFormStatus("submitting")
-
-    try {
-      const response = await fetch("/api/service/battery-inquiry", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          file: uploadedFileData,
-        }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Error submitting form")
-      }
-
-      setFormStatus("success")
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      setFormStatus("error")
-      setErrorMessage(error instanceof Error ? error.message : "Error submitting form")
+    if (!file) {
+      setErrorMessage("Please upload a file before submitting")
+      return
     }
+
+    setErrorMessage(null)
+
+    // Prepare the complete form data including the file
+    const completeFormData = {
+      ...data,
+      file: file,
+    }
+
+    // Use the onFormSubmit function passed from ServiceFormWrapper if available
+    if (props?.onFormSubmit) {
+      await props.onFormSubmit(completeFormData)
+      return
+    }
+
+    // Otherwise use the local form submission logic
+    await handleFormSubmit(data, file)
   }
+
+  // Check for stored form data on component mount
+  useEffect(() => {
+    try {
+      const storedFormPage = localStorage.getItem("pendingFormPage")
+      const currentPath = window.location.pathname
+
+      // Only restore data if we're on the same page that stored it
+      if (storedFormPage === currentPath) {
+        const storedFormData = localStorage.getItem("pendingFormData")
+        const hadFile = localStorage.getItem("hadPendingFile") === "true"
+
+        if (storedFormData) {
+          console.log("Found stored form data for current page:", currentPath)
+          const parsedData = JSON.parse(storedFormData)
+
+          // Restore the form data
+          Object.entries(parsedData).forEach(([key, value]) => {
+            if (key === "dimensions") {
+              // Handle nested dimensions object
+              Object.entries(value as Record<string, string>).forEach(([dimKey, dimValue]) => {
+                setValue(`dimensions.${dimKey}` as any, dimValue)
+              })
+            } else {
+              setValue(key as any, value as any)
+            }
+          })
+
+          // If we had a file, show a message to re-select it
+          if (hadFile) {
+            setErrorMessage("Please re-select your file to complete your submission")
+          }
+
+          // Clear the stored data
+          localStorage.removeItem("pendingFormData")
+          localStorage.removeItem("pendingFormPage")
+          localStorage.removeItem("hadPendingFile")
+
+          // Trigger validation
+          trigger()
+        }
+      }
+    } catch (e) {
+      console.error("Error checking for stored form data:", e)
+    }
+  }, [setValue, trigger])
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-semibold mb-6">Battery Packs Inquiry</h1>
 
-      {formStatus === "success" ? (
+      {/* Submission Progress Modal with Auth */}
+      <SubmissionProgress
+        isOpen={submissionStep !== "idle"}
+        currentStep={submissionStep === "idle" ? "authenticating" : submissionStep}
+        error={error || undefined}
+        onAuthSuccess={handleAuthSuccess}
+      />
+
+      {formSuccess ? (
         <div className="bg-green-50 p-6 rounded-xl border border-green-200 text-center">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-medium text-green-800 mb-2">Inquiry Submitted Successfully</h2>
-          <p className="text-green-700 mb-4">Thanks {session.data?.user?.name } for your inquiry. We will get back to you soon.</p>
+          <p className="text-green-700 mb-4">
+            Thanks {session.data?.user?.name} for your inquiry. We will get back to you soon.
+          </p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setFormSuccess(false)
+              setFile(null)
+              reset()
+            }}
             className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
           >
             Submit Another Inquiry
@@ -169,69 +232,59 @@ export default function BatteryPackForm() {
           {/* File Upload */}
           <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#FAFAFA] mb-6 flex flex-col items-center justify-center">
             <input
+              ref={fileInputRef}
               type="file"
               id="file"
               className="hidden"
-              onChange={handleFileUpload}
+              onChange={handleFileChange}
               accept=".pdf,.xls,.xlsx,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.stp"
-              disabled={fileUploadStatus === "uploading" || formStatus === "submitting"}
+              disabled={isSubmitting}
             />
 
-            {fileUploadStatus === "idle" && (
-              <label
-                htmlFor="file"
-                className="cursor-pointer flex items-center justify-center bg-orange-100 px-4 py-2 rounded-full text-orange-600 text-sm w-max"
-              >
-                <Upload className="w-5 h-5 mr-2" /> Upload Your File
-              </label>
-            )}
-
-            {fileUploadStatus === "uploading" && (
-              <div className="flex flex-col items-center">
-                <Loader2 className="w-8 h-8 text-orange-500 animate-spin mb-2" />
-                <p className="text-gray-600">Uploading file to Cloudinary...</p>
-              </div>
-            )}
-
-            {fileUploadStatus === "success" && (
-              <div className="flex flex-col items-center">
-                <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
-                <p className="text-gray-600 mb-2">File uploaded successfully</p>
-                <p className="text-sm text-gray-500">{file?.name}</p>
-                <button
-                  onClick={() => {
-                    setFile(null)
-                    setFileUploadStatus("idle")
-                    setUploadedFileData(null)
-                  }}
-                  className="mt-4 text-orange-600 underline text-sm"
-                >
-                  Upload a different file
-                </button>
-              </div>
-            )}
-
-            {fileUploadStatus === "error" && (
-              <div className="flex flex-col items-center">
-                <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
-                <p className="text-red-600 mb-2">Error uploading file</p>
-                <p className="text-sm text-red-500 mb-4">{errorMessage}</p>
+            {!file ? (
+              <>
                 <label
                   htmlFor="file"
                   className="cursor-pointer flex items-center justify-center bg-orange-100 px-4 py-2 rounded-full text-orange-600 text-sm w-max"
                 >
-                  <Upload className="w-5 h-5 mr-2" /> Try Again
+                  <Upload className="w-5 h-5 mr-2" /> Select Your File
                 </label>
+                <p className="mt-2 text-sm text-gray-500">
+                  Supported formats: PDF, Excel, Word, Images, STP (Max 100MB)
+                </p>
+              </>
+            ) : (
+              <div className="flex flex-col items-center">
+                <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
+                <p className="text-gray-600 mb-2">File selected</p>
+                <p className="text-sm text-gray-500">{file.name}</p>
+                <button
+                  onClick={() => {
+                    setFile(null)
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = ""
+                    }
+                  }}
+                  className="mt-4 text-orange-600 underline text-sm"
+                  disabled={isSubmitting}
+                >
+                  Select a different file
+                </button>
               </div>
-            )}
-
-            {fileUploadStatus === "idle" && !file && (
-              <p className="mt-2 text-sm text-gray-500">Supported formats: PDF, Excel, Word, Images, STP (Max 100MB)</p>
             )}
           </div>
 
+          {errorMessage && (
+            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-md text-red-600">
+              <p className="flex items-center">
+                <AlertCircle className="w-5 h-5 mr-2" />
+                {errorMessage}
+              </p>
+            </div>
+          )}
+
           {/* Form Fields */}
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form id="batteryPackForm" ref={formRef} onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="col-span-1 md:col-span-2 lg:col-span-1">
                 <label className="block font-medium">Chemistry</label>
@@ -245,7 +298,7 @@ export default function BatteryPackForm() {
                         setValue("chemistry", type as FormData["chemistry"])
                         trigger("chemistry")
                       }}
-                      disabled={formStatus === "submitting"}
+                      disabled={isSubmitting}
                     >
                       {type}
                     </button>
@@ -261,7 +314,7 @@ export default function BatteryPackForm() {
                     {...register(field.name as keyof FormData)}
                     className="w-full border p-3 rounded-md mt-1 bg-[#FAFAFA]"
                     placeholder="Write here"
-                    disabled={formStatus === "submitting"}
+                    disabled={isSubmitting}
                   />
                   {errors[field.name as keyof FormData] && (
                     <p className="text-red-500 text-sm">{errors[field.name as keyof FormData]?.message}</p>
@@ -279,7 +332,7 @@ export default function BatteryPackForm() {
                         {...register(`dimensions.${dim}` as `dimensions.${keyof FormData["dimensions"]}`)}
                         className="border p-2 rounded-md max-w-[7rem] w-full bg-[#FAFAFA]"
                         placeholder={dim}
-                        disabled={formStatus === "submitting"}
+                        disabled={isSubmitting}
                       />
                       {errors.dimensions?.[dim as keyof FormData["dimensions"]] && (
                         <p className="text-red-500 text-sm">
@@ -300,37 +353,29 @@ export default function BatteryPackForm() {
                 className="w-full border p-2 rounded-md mt-1 bg-[#FAFAFA]"
                 placeholder="Write here"
                 rows={3}
-                disabled={formStatus === "submitting"}
+                disabled={isSubmitting}
               ></textarea>
             </div>
 
-            {errorMessage && formStatus === "error" && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600">
-                <p className="flex items-center">
-                  <AlertCircle className="w-5 h-5 mr-2" />
-                  {errorMessage}
-                </p>
-              </div>
-            )}
-
-            <button
+            {/* Protected Submit Button */}
+            <ProtectedButton
               type="submit"
               className="mt-6 bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
-              disabled={formStatus === "submitting" || fileUploadStatus === "uploading" || !uploadedFileData}
+              disabled={isSubmitting}
+              formId="batteryPackForm"
             >
-              {formStatus === "submitting" ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Submitting...
+                  Processing...
                 </>
               ) : (
                 "Submit"
               )}
-            </button>
+            </ProtectedButton>
           </form>
         </>
       )}
     </div>
   )
 }
-

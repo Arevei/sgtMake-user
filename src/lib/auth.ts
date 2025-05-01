@@ -66,6 +66,50 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // Only run this for Google sign-in
+      if (account?.provider === "google" && profile?.email) {
+        // Check if a user with this email already exists (from credentials)
+        const existingUser = await db.user.findUnique({
+          where: { email: profile.email },
+          include: { accounts: true },
+        })
+
+        // If user exists but doesn't have a Google account linked
+        if (existingUser && existingUser.accounts.length === 0) {
+          // Create a new account entry linking Google to the existing user
+          await db.account.create({
+            data: {
+              userId: existingUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+            },
+          })
+
+          // Update user information if needed
+          await db.user.update({
+            where: { id: existingUser.id },
+            data: {
+              name: user.name || existingUser.name,
+              image: user.image || existingUser.image,
+              lastLogin: new Date(),
+            },
+          })
+
+          // Return true to allow sign-in
+          return true
+        }
+      }
+
+      // Default behavior for other cases
+      return true
+    },
     async jwt({ token, user, trigger, session }) {
       if (trigger === "update") {
         return { ...token, ...session.user };

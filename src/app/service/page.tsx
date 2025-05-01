@@ -1,13 +1,16 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import type React from "react"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { Upload, CheckCircle, AlertCircle, Loader2, Plus, Minus } from "lucide-react"
+import { Upload, CheckCircle, AlertCircle, Plus, Minus, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useSession } from "next-auth/react"
+import { SubmissionProgress } from "@/components/submission-progress"
+import { useFormSubmission } from "@/hooks/use-form-submission"
+import { ProtectedButton } from "@/components/protected-button"
 
 // Define allowed file types and max size
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
@@ -30,10 +33,6 @@ const baseFormSchema = z.object({
 })
 
 // Service-specific schema extensions
-
-
-
-
 const designingSchema = baseFormSchema.extend({
   printType: z.enum(["fdm", "sla"]),
   color: z.string(),
@@ -54,24 +53,24 @@ const materialOptions = [
   { value: "plastic", label: "Plastic" },
 ]
 
-export default function ManufacturingServices() {
+interface ManufacturingServicesProps {
+  onFormSubmit?: (formData: any) => Promise<void>
+}
+
+export default function ManufacturingServices(props: ManufacturingServicesProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const serviceParam = searchParams.get("service") || "cnc-machining"
 
   const [activeService, setActiveService] = useState(serviceParam)
   const [file, setFile] = useState<File | null>(null)
-  const [fileUploadStatus, setFileUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
-  const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
-  const [uploadedFileData, setUploadedFileData] = useState<{
-    url: string
-    public_id?: string
-    name: string
-    type: string
-    size?: number
-  } | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [submittedServiceId, setSubmittedServiceId] = useState<string | null>(null)
+  const [formSuccess, setFormSuccess] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const session = useSession()
 
   // Determine which schema to use based on active service
   const getFormSchema = () => {
@@ -124,11 +123,11 @@ export default function ManufacturingServices() {
     reset,
     trigger,
     formState: { errors },
-  } = useForm<z.infer< typeof designingSchema>>({
+    getValues,
+  } = useForm<z.infer<typeof designingSchema>>({
     resolver: zodResolver(getFormSchema()),
     defaultValues: getDefaultValues(),
   })
-  const session = useSession()
 
   // Reset form when service changes
   useEffect(() => {
@@ -141,95 +140,94 @@ export default function ManufacturingServices() {
     setActiveService(service)
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const uploadedFile = e.target.files[0]
+      const selectedFile = e.target.files[0]
 
       // Check file type
       const isAllowedType = ALLOWED_FILE_TYPES.some(
-        (type) => uploadedFile.type.includes(type) || (type.endsWith("/") && uploadedFile.type.startsWith(type)),
+        (type) => selectedFile.type.includes(type) || (type.endsWith("/") && selectedFile.type.startsWith(type)),
       )
-      console.log("File type:", uploadedFile.type, "Allowed types:", ALLOWED_FILE_TYPES, "Is allowed:", isAllowedType)
 
-      // if (!isAllowedType || uploadedFile.size > MAX_FILE_SIZE) {
-      //   setErrorMessage("Invalid file type or size exceeds 100MB")
-      //   return
-      // }
-
-      setFile(uploadedFile)
-      setFileUploadStatus("uploading")
-      setErrorMessage(null)
-
-      // Upload the file to Cloudinary
-      try {
-        const formData = new FormData()
-        formData.append("file", uploadedFile)
-
-        const response = await fetch("/api/service/upload", {
-          method: "POST",
-          body: formData,
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || "Error uploading file")
-        }
-
-        const data = await response.json()
-        setUploadedFileData({
-          url: data.url,
-          public_id: data.public_id,
-          name: data.name,
-          type: data.type,
-          size: data.size,
-        })
-        setFileUploadStatus("success")
-      } catch (error) {
-        console.error("Error uploading file:", error)
-        setFileUploadStatus("error")
-        setErrorMessage(error instanceof Error ? error.message : "Error uploading file")
+      if (!isAllowedType || selectedFile.size > MAX_FILE_SIZE) {
+        setErrorMessage("Invalid file type or size exceeds 100MB")
+        return
       }
+
+      setFile(selectedFile)
+      setErrorMessage(null)
     }
   }
 
-  const onSubmit = async (data: any) => {
-    setFormStatus("submitting")
+  const submitFormToServer = async (formData: any, fileData: any) => {
+    const response = await fetch("/api/service", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        serviceType: activeService,
+        ...formData,
+        file: fileData,
+      }),
+    })
 
-    try {
-      const response = await fetch("/api/service", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          serviceType: activeService,
-          ...data,
-          file: uploadedFileData,
-        }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Error submitting form")
-      }
-
-      const result = await response.json()
-      setSubmittedServiceId(result.data.id)
-      setFormStatus("success")
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      setFormStatus("error")
-      setErrorMessage(error instanceof Error ? error.message : "Error submitting form")
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || "Error submitting form")
     }
+
+    const result = await response.json()
+    setSubmittedServiceId(result.data.id)
+    return result
+  }
+
+  const {
+    submissionStep,
+    handleSubmit: handleFormSubmit,
+    handleAuthSuccess,
+    error,
+    isSubmitting,
+  } = useFormSubmission({
+    onSubmitForm: submitFormToServer,
+    onSuccess: () => {
+      setFormSuccess(true)
+    },
+  })
+
+  // Update the onSubmit function to use the improved authentication flow
+  const onSubmit = async (data: any) => {
+    if (!file) {
+      setErrorMessage("Please upload a file before submitting")
+      return
+    }
+
+    setErrorMessage(null)
+
+    // Prepare the complete form data including the file and service type
+    const completeFormData = {
+      serviceType: activeService,
+      ...data,
+      file: file,
+    }
+
+    // Use the onFormSubmit function passed from ServiceFormWrapper if available
+    if (props?.onFormSubmit) {
+      await props.onFormSubmit(completeFormData)
+      return
+    }
+
+    // Otherwise use the local form submission logic
+    await handleFormSubmit(data, file)
   }
 
   // Render service-specific form fields
   const renderServiceFields = () => {
     switch (activeService) {
       case "cnc-machining":
-        return "";
+        return ""
       case "laser-cutting":
-        return "";
+        return ""
       case "3d-printing":
         const printType = watch("printType")
         const materialOptions =
@@ -294,7 +292,10 @@ export default function ManufacturingServices() {
                     <button
                       key={material.value}
                       type="button"
-                      onClick={() => {setValue("material", material.value); errors.material ? trigger("material"):""}}
+                      onClick={() => {
+                        setValue("material", material.value)
+                        errors.material ? trigger("material") : ""
+                      }}
                       className={`px-4 py-2 rounded-md border ${
                         watch("material") === material.value
                           ? "bg-gray-200 border-gray-400"
@@ -305,14 +306,8 @@ export default function ManufacturingServices() {
                     </button>
                   ))}
                 </div>
-                   {errors.material && <p className="text-red-500 text-xs mt-1">{errors.material.message as string}</p>}
+                {errors.material && <p className="text-red-500 text-xs mt-1">{errors.material.message as string}</p>}
               </div>
-              {/* <iframe
-  src={`https://sharecad.org/cadframe/load?url=https://res.cloudinary.com/dnic2gxfp/raw/upload/v1744715303/services/n857e1tw695tjg9dbibl`}
-  width="100%"
-  height="600px"
-  frameBorder="0"
-></iframe> */}
 
               <div>
                 <label className="block text-sm font-medium mb-1">Color</label>
@@ -342,9 +337,61 @@ export default function ManufacturingServices() {
     }
   }
 
+  // Check for stored form data on component mount
+  useEffect(() => {
+    try {
+      const storedFormPage = localStorage.getItem("pendingFormPage")
+      const currentPath = window.location.pathname
+      
+      // Only restore data if we're on the same page that stored it
+      if (storedFormPage === currentPath) {
+        const storedFormData = localStorage.getItem("pendingFormData")
+        const hadFile = localStorage.getItem("hadPendingFile") === "true"
+        
+        if (storedFormData) {
+          console.log("Found stored form data for current page:", currentPath)
+          const parsedData = JSON.parse(storedFormData)
+          
+          // Restore the form data
+          Object.entries(parsedData).forEach(([key, value]) => {
+            setValue(key as any, value as any)
+          })
+          
+          // If service type was stored, set it
+          if (parsedData.serviceType) {
+            setActiveService(parsedData.serviceType)
+          }
+          
+          // If we had a file, show a message to re-select it
+          if (hadFile) {
+            setErrorMessage("Please re-select your file to complete your submission")
+          }
+          
+          // Clear the stored data
+          localStorage.removeItem("pendingFormData")
+          localStorage.removeItem("pendingFormPage")
+          localStorage.removeItem("hadPendingFile")
+          
+          // Trigger validation
+          trigger()
+        }
+      }
+    } catch (e) {
+      console.error("Error checking for stored form data:", e)
+    }
+  }, [setValue, trigger])
+
   return (
     <div>
-      {formStatus === "success" ? (
+      {/* Submission Progress Modal with Auth */}
+      <SubmissionProgress
+        isOpen={submissionStep !== "idle"}
+        currentStep={submissionStep === "idle" ? "authenticating" : submissionStep}
+        error={error || undefined}
+        onAuthSuccess={handleAuthSuccess}
+      />
+
+      {formSuccess ? (
         <div className="bg-green-50 my-6 max-w-6xl mx-auto p-6 rounded-xl border border-green-200 text-center">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-medium text-green-800 mb-2">Order Submitted Successfully</h2>
@@ -354,10 +401,8 @@ export default function ManufacturingServices() {
           {submittedServiceId && <p className="text-green-700 mb-4">Service ID: {submittedServiceId}</p>}
           <button
             onClick={() => {
-              setFormStatus("idle")
-              setFileUploadStatus("idle")
+              setFormSuccess(false)
               setFile(null)
-              setUploadedFileData(null)
               reset(getDefaultValues())
             }}
             className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700"
@@ -384,77 +429,62 @@ export default function ManufacturingServices() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="my-6 max-w-6xl mx-auto px-3 md:px-6 pb-20">
+          <form id="serviceForm" ref={formRef} onSubmit={handleSubmit(onSubmit)} className="my-6 max-w-6xl mx-auto px-3 md:px-6 pb-20">
             {/* File Upload */}
             <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#FAFAFA] mb-6 flex flex-col items-center justify-center">
               <input
+                ref={fileInputRef}
                 type="file"
                 id="file"
                 className="hidden"
-                onChange={handleFileUpload}
-                accept={activeService === "3d-printing" ? ".stl ,.obj ,.3mf ,.x3g" : ".pdf,.igs,.dxf,.dwg"}
-                disabled={fileUploadStatus === "uploading" || formStatus === "submitting"}
+                onChange={handleFileChange}
+                accept={activeService === "3d-printing" ? ".stl,.obj,.3mf,.x3g" : ".pdf,.igs,.dxf,.dwg"}
+                disabled={isSubmitting}
               />
 
-              {fileUploadStatus === "idle" && (
-                <label
-                  htmlFor="file"
-                  className="cursor-pointer flex items-center justify-center bg-orange-100 px-4 py-2 rounded-full text-orange-600 text-sm w-max"
-                >
-                  <Upload className="w-5 h-5 mr-2" /> Upload Your File
-                </label>
-              )}
-
-              {fileUploadStatus === "uploading" && (
-                <div className="flex flex-col items-center">
-                  <Loader2 className="w-8 h-8 text-orange-500 animate-spin mb-2" />
-                  <p className="text-gray-600">Uploading file...</p>
-                </div>
-              )}
-
-              {fileUploadStatus === "success" && (
-                <div className="flex flex-col items-center">
-                  <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
-                  <p className="text-gray-600 mb-2">File uploaded successfully</p>
-                  <p className="text-sm text-gray-500">{file?.name}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFile(null)
-                      setFileUploadStatus("idle")
-                      setUploadedFileData(null)
-                    }}
-                    className="mt-4 text-orange-600 underline text-sm"
-                  >
-                    Upload a different file
-                  </button>
-                </div>
-              )}
-
-              {fileUploadStatus === "error" && (
-                <div className="flex flex-col items-center">
-                  <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
-                  <p className="text-red-600 mb-2">Error uploading file</p>
-                  <p className="text-sm text-red-500 mb-4">{errorMessage}</p>
+              {!file ? (
+                <>
                   <label
                     htmlFor="file"
                     className="cursor-pointer flex items-center justify-center bg-orange-100 px-4 py-2 rounded-full text-orange-600 text-sm w-max"
                   >
-                    <Upload className="w-5 h-5 mr-2" /> Try Again
+                    <Upload className="w-5 h-5 mr-2" /> Select Your File
                   </label>
-                </div>
-              )}
-
-              {fileUploadStatus === "idle" && !file && (
-                <>
                   <p className="mt-2 text-sm text-gray-500">Upload your design files, drawings, or specifications</p>
                   <p className="mt-2 text-sm text-gray-500">
-                    {" "}
-                    File type : {activeService === "3d-printing" ? "STL, OBJ, 3MF, X3G" : ".pdf .igs ,.dxf ,.dwg"}{" "}
+                    File type: {activeService === "3d-printing" ? "STL, OBJ, 3MF, X3G" : ".pdf .igs ,.dxf ,.dwg"}
                   </p>
                 </>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <CheckCircle className="w-8 h-8 text-green-500 mb-2" />
+                  <p className="text-gray-600 mb-2">File selected</p>
+                  <p className="text-sm text-gray-500">{file.name}</p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFile(null)
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = ""
+                      }
+                    }}
+                    className="mt-4 text-orange-600 underline text-sm"
+                    disabled={isSubmitting}
+                  >
+                    Select a different file
+                  </button>
+                </div>
               )}
             </div>
+
+            {errorMessage && (
+              <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-md text-red-600">
+                <p className="flex items-center">
+                  <AlertCircle className="w-5 h-5 mr-2" />
+                  {errorMessage}
+                </p>
+              </div>
+            )}
 
             {/* Service-specific fields */}
             {renderServiceFields()}
@@ -474,6 +504,7 @@ export default function ManufacturingServices() {
                           ? "bg-gray-200 border-gray-400"
                           : "bg-white border-gray-300"
                       }`}
+                      disabled={isSubmitting}
                     >
                       {material.label}
                     </button>
@@ -493,6 +524,7 @@ export default function ManufacturingServices() {
                   className={`px-4 py-2 rounded-md border ${
                     watch("surfaceFinish") === true ? "bg-gray-200 border-gray-400" : "bg-white border-gray-300"
                   }`}
+                  disabled={isSubmitting}
                 >
                   Yes
                 </button>
@@ -502,6 +534,7 @@ export default function ManufacturingServices() {
                   className={`px-4 py-2 rounded-md border ${
                     watch("surfaceFinish") === false ? "bg-gray-200 border-gray-400" : "bg-white border-gray-300"
                   }`}
+                  disabled={isSubmitting}
                 >
                   No
                 </button>
@@ -521,7 +554,7 @@ export default function ManufacturingServices() {
                     }
                   }}
                   className="border rounded-md p-2"
-                  disabled={watch("quantity") <= 1}
+                  disabled={watch("quantity") <= 1 || isSubmitting}
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -530,6 +563,7 @@ export default function ManufacturingServices() {
                   {...register("quantity", { valueAsNumber: true })}
                   min="1"
                   className="w-16 text-center mx-2 border rounded-md p-2"
+                  disabled={isSubmitting}
                 />
                 <button
                   type="button"
@@ -538,6 +572,7 @@ export default function ManufacturingServices() {
                     setValue("quantity", currentValue + 1)
                   }}
                   className="border rounded-md p-2"
+                  disabled={isSubmitting}
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -553,35 +588,29 @@ export default function ManufacturingServices() {
                 className="w-full border p-3 rounded-md bg-[#FAFAFA]"
                 rows={4}
                 placeholder="Write here"
+                disabled={isSubmitting}
               ></textarea>
             </div>
 
-            {errorMessage && formStatus === "error" && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600">
-                <p className="flex items-center">
-                  <AlertCircle className="w-5 h-5 mr-2" />
-                  {errorMessage}
-                </p>
-              </div>
-            )}
-
-            <button
+            <ProtectedButton
               type="submit"
               className="mt-6 bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed mb-10"
-              disabled={formStatus === "submitting" || fileUploadStatus === "uploading" || !uploadedFileData}
-            >
-              {formStatus === "submitting" ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit"
-              )}
-            </button>
-          </form>
-        </>
-      )}
-    </div>
-  )
+              disabled={isSubmitting}
+              formId="serviceForm"
+              formData={{ ...getValues(), serviceType: activeService }}
+            >{isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Submit"
+            )}
+          </ProtectedButton>
+        </form>
+      </>
+    )}
+  </div>
+)
 }
+
