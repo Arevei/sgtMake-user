@@ -81,7 +81,7 @@ export default function AuthenticationPage() {
               <AuthForm onGoogleSignIn={handleGoogleSignIn} />
 
               <div className="mt-6 text-center text-sm text-gray-500">
-                <p>After signing in, you'll be redirected back to continue your submission.</p>
+                <p>After signing in, you will be redirected back to continue your submission.</p>
               </div>
             </>
           )}
