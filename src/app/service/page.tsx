@@ -57,7 +57,11 @@ interface ManufacturingServicesProps {
   onFormSubmit?: (formData: any) => Promise<void>
 }
 
-export default function ManufacturingServices(props: ManufacturingServicesProps) {
+export default function Page() {
+  return <ManufacturingServices />
+}
+
+function ManufacturingServices(props: ManufacturingServicesProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const serviceParam = searchParams.get("service") || "cnc-machining"

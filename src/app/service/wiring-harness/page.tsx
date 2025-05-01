@@ -41,7 +41,11 @@ interface WiringHarnessFormProps {
   onFormSubmit?: (formData: any) => Promise<void>
 }
 
-export default function WiringHarnessForm(props: WiringHarnessFormProps) {
+export default function Page() {
+  return <WiringHarnessForm />
+}
+
+function WiringHarnessForm(props: WiringHarnessFormProps) {
   const [file, setFile] = useState<File | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [formSuccess, setFormSuccess] = useState(false)

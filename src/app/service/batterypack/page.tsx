@@ -40,7 +40,11 @@ interface BatteryPackFormProps {
   onFormSubmit?: (formData: any) => Promise<void>
 }
 
-export default function BatteryPackForm(props: BatteryPackFormProps) {
+export default function Page() {
+  return <BatteryPackForm />
+}
+
+function BatteryPackForm(props: BatteryPackFormProps) {
   const [file, setFile] = useState<File | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [formSuccess, setFormSuccess] = useState(false)
