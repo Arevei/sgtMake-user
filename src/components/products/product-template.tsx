@@ -12,7 +12,11 @@ import { ProductProps } from "@/lib/types/types";
 import RelatedProducts from "./related-products";
 
 type ProductTemplateProps = {
-  product: ProductProps;
+  product: ProductProps & {
+    category: {
+      description: string;
+    };
+  };
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
