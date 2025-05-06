@@ -81,6 +81,10 @@ export type MakeColorVariant = {
 
 export type ProductProps = Omit<Product, "color"> & {
   colorVariants: ColorVariantRes[];
+  category: {
+    description: string;
+    // add more fields if your app needs them
+  };
 };
 
 export type ProductResProps = Res & {
