@@ -54,7 +54,7 @@ export default function ConnectorsWiresPage() {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TabType>("Connectors")
-  const [selectedConnector, setSelectedConnector] = useState<ConnectorType | null>("QS 8")
+  const [selectedConnector, setSelectedConnector] = useState<ConnectorType | null>(null)
 
   // Set up form validation based on active tab
   const getValidationSchema = () => {
