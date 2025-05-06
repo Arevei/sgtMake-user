@@ -49,9 +49,14 @@ const ProductPage = async ({ params, searchParams }: Props) => {
   ).catch((_) => notFound());
   if (!product?.product) return <NotFound />;
 
+  const productWithCategory = {
+    ...product.product,
+    category: product.category ?? { description: "" },
+  };
+
   return (
     <>
-      <ProductTemplate product={product?.product} searchParams={searchParams} />
+      <ProductTemplate product={productWithCategory} searchParams={searchParams} />
     </>
   );
 };
