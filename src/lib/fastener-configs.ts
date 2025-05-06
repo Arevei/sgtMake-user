@@ -4,7 +4,8 @@ import type { FastenerConfig } from "@/components/fasteners/fastener-selector"
 export const boltConfig: FastenerConfig = {
   type: "Bolt",
   image: "/images/fasteners/bolts.jpg", // Replace with your actual image path
-  basePrice: 0.5, // Base price for the simplest bolt
+  basePrice: 0.5,
+  description:"Threaded fasteners used with nuts or tapped holes. Ideal for creating strong, removable joints in metal frames, machinery, and assemblies. ", // Base price for the simplest bolt
   options: {
     headType: {
       label: "Head Type",
@@ -80,7 +81,7 @@ export const boltConfig: FastenerConfig = {
         { id: "nickel-coated", name: "Nickel Coated" },
       ],
     },
-    
+
   },
 }
 
@@ -88,7 +89,8 @@ export const boltConfig: FastenerConfig = {
 export const nutConfig: FastenerConfig = {
   type: "Nut",
   image: "/images/fasteners/nut.jpg", // Replace with your actual image path
-  basePrice: 0.3, // Base price for the simplest nut
+  basePrice: 0.3,
+  description: "Hexagonal fasteners paired with bolts. Available in standard, lock, and flange types to provide firm clamping force.  ", // Base price for the simplest nut
   options: {
     type: {
       label: "Type",
@@ -152,6 +154,7 @@ export const washerConfig: FastenerConfig = {
   type: "Washer",
   image: "/images/fasteners/washer.jpg", // Replace with your actual image path
   basePrice: 0.15, // Base price for the simplest washer
+  description: " Placed under bolts or nuts to distribute load, prevent loosening, and protect surfaces. Available in flat, spring, and lock types.",
   options: {
     type: {
       label: "Type",
@@ -189,6 +192,7 @@ export const brassInsertConfig: FastenerConfig = {
   type: "Brass Insert",
   image: "/images/fasteners/brass-insert.png", // Replace with your actual image path
   basePrice: 0.4, // Base price for the simplest brass insert
+  description: " Threaded inserts that expand inside sheet metal or tubing. Useful for adding strong threads in thin or hollow materials. ",
   options: {
     size: {
       label: "Size",
@@ -208,6 +212,7 @@ export const revNutsConfig: FastenerConfig = {
   type: "Rev Nuts",
   image: "/images/fasteners/rev-nuts.jpeg", // Replace with your actual image path
   basePrice: 0.35, // Base price for the simplest rev nut
+  description: " ",
   options: {
     size: {
       label: "Size",
@@ -228,6 +233,7 @@ export const sandOffsConfig: FastenerConfig = {
   type: "Stand Offs",
   image: "/images/fasteners/sand-offs.webp", // Replace with your actual image path
   basePrice: 0.45, // Base price for the simplest sand off
+  description: "Spacer fasteners used to create fixed gaps between components. Commonly used in PCBs,electronics, and panel assemblies. ",
   options: {
     size: {
       label: "Size",
@@ -286,6 +292,7 @@ export const screwConfig: FastenerConfig = {
   type: "Screw",
   image: "/images/fasteners/screw.jpg", // Replace with your actual image path
   basePrice: 0.25, // Base price for the simplest screw
+  description: " Self-tapping or machine-threaded fasteners for wood, plastic, or metal. Essential for assembly,electronics, and structural builds. ",
   options: {
     headType: {
       label: "Head Type",

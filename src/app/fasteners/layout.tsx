@@ -29,8 +29,8 @@ export default function FastenerLayout({ children }: FastenerLayoutProps) {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar Navigation */}
         <div className="w-full md:w-1/5">
-          <nav className="bg-gray-50 rounded-lg p-4">
-            <ul className="space-y-1">
+          <nav className="bg-[#F6F5F5] p-1  border-3 border-[#807B7B3D] rounded-xl h-auto  md:h-full">
+            <ul className="space-y-1 sticky top-6">
               {fastenerCategories.map((category) => (
                 <li key={category.id}>
                   <Link

@@ -20,6 +20,7 @@ export interface FastenerConfig {
   type: string
   image: string
   basePrice: number
+  description: string
   options: {
     [key: string]: {
       label: string
@@ -166,6 +167,11 @@ export default function FastenerSelector({ config, activeCategory }: FastenerSel
     <div className="space-y-6">
       {/* Render each option category */}
       <AnimatePresence mode="wait">
+      <h2 className="text-lg font-medium ">
+        Description
+      </h2>
+
+        <p className="text-sm text-gray-500 max-w-xl">{config.description}</p>
         {Object.entries(config.options).map(([key, optionConfig]) => {
           if (key === "remarks") return null // Handle remarks separately
 

@@ -65,14 +65,17 @@ model BestDeal {
 }
 
 model Cart {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String?     @db.ObjectId @unique
-  guestUserId String?     @db.ObjectId @unique
-  guestUser   GuestUser?  @relation(fields: [guestUserId], references: [id])
-  User        User?       @relation(fields: [userId], references: [id])
- cartItems CartItem[] 
- 
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+
+  userId       String?     @unique @db.ObjectId
+  guestUserId  String?     @unique @db.ObjectId
+
+  guestUser    GuestUser?  @relation(fields: [guestUserId], references: [id])
+  User         User?       @relation(fields: [userId], references: [id])
+
+  cartItems    CartItem[]
 }
+
 model CartItem {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   productId     String?  @db.ObjectId // optional if using custom product
@@ -83,7 +86,6 @@ model CartItem {
   cart          Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   product       Product? @relation(fields: [productId], references: [id])
 
-  @@index([cartId])
 }
 type CustomProductJson {
   title      String
@@ -101,6 +103,7 @@ model Category {
   parent   Category?   @relation("Category", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   Category Category[]  @relation("Category")
   Product  Product[]
+  description String?
 }
 
 model GuestUser {

@@ -49,7 +49,7 @@ export function AuthForm() {
 
   const signInWithGoogle = async () => {
     try {
-      await signIn("google");
+      await signIn("google",{callbackUrl: callbackUrl || "/"});
     } catch (error: any) {
       toast.error(error.message);
     }

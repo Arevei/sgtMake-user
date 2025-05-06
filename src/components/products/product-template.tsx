@@ -107,7 +107,7 @@ const ProductTemplate = ({ product, searchParams }: ProductTemplateProps) => {
           <div className="my-5 md:my-10">
             <h1 className="font-medium">Description</h1>
             <hr className="my-2" />
-            <p className="text-sm font-light">{product.description}</p>
+            <p className="text-sm font-light">{ product.description || product.category.description || "No Description"}</p> 
           </div>
         </div>
       </div>

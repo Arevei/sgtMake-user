@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Minus, Plus } from 'lucide-react'
+import { Minus, Plus } from "lucide-react"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -54,7 +54,7 @@ export default function ConnectorsWiresPage() {
   const { data: session } = useSession()
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TabType>("Connectors")
-  const [selectedConnector, setSelectedConnector] = useState<ConnectorType | null>(null)
+  const [selectedConnector, setSelectedConnector] = useState<ConnectorType | null>("QS 8")
 
   // Set up form validation based on active tab
   const getValidationSchema = () => {
@@ -246,6 +246,40 @@ export default function ConnectorsWiresPage() {
     "34 Pin Superseal",
   ]
 
+  // Connector descriptions from documentation
+  const connectorDescriptions: Record<ConnectorType, string> = {
+    "QS 8":
+      "High-current anti-spark connector, commonly used in battery packs and powertrains for electric vehicles, drones, and robotics.",
+    "QS 10":
+      "Heavy-duty version of QS8 with larger terminals. Suitable for higher voltage and current EV systems, industrial motors, and large battery modules.",
+    "Bullet Connectors":
+      "Simple plug-and-play connectors for quick connections in low to medium power applications like RC models, LED strips, and DIY electronics.",
+    "Chogory Connectors":
+      "Waterproof automotive-style connectors widely used in EV wiring harnesses and battery systems. Known for secure locking and durability.",
+    "Anderson Connectors":
+      "High-current, genderless power connectors ideal for modular battery systems, forklifts, and industrial power equipment.",
+    "Tyco Connectors":
+      "Automotive-grade connectors from TE Connectivity. Common in OEM wiring harnesses, offering high vibration resistance and secure mating.",
+    "Furukawa Connectors":
+      "Premium Japanese connectors used in automotive and EV wiring harnesses. Known for precision, high reliability, and weather resistance.",
+    "ZT2023-A":
+      "Compact, multi-pin automotive/industrial connector designed for high-density applications with vibration-proof locking.",
+    "XT90 Connectors":
+      "Popular high-current connectors used in drones, e-bikes, and DIY EVs. Easy to solder and known for their strong, stable connections.",
+    "26 Pin Superseal":
+      "Sealed multi-pin connector with 26 terminals. Ideal for ECUs, BMS, and sensor modules in harsh environments requiring waterproofing.",
+    "34 Pin Superseal":
+      "Expanded version of the Superseal connector with 34 terminals. Used for complex harnessing in EVs, controllers, and industrial equipment.",
+  }
+
+  // Wire descriptions from documentation
+  const wireDescriptions = {
+    "Harness Wires":
+      "Reliable and easy-to-use PVC insulated wires perfect for internal wiring in vehicles, appliances, machinery, or custom projects. Available in multiple sizes and colors, these wires are ideal for making neat, color-coded wiring harnesses.",
+    "Silicon Wires":
+      "Flexible, heat-resistant wires designed for demanding environments like electric vehicles, robotics, battery packs, and embedded electronics. With high-temperature silicone insulation, they're perfect for applications where durability and flexibility matter.",
+  }
+
   // Watch form values
   const formValues = watch()
 
@@ -279,16 +313,22 @@ export default function ConnectorsWiresPage() {
               <h2 className="text-xl font-medium mb-4">Connectors</h2>
               <div className="flex flex-col space-y-1">
                 {connectorOptions.map((connector) => (
-                  <button
-                    key={connector}
-                    type="button"
-                    className={`text-left px-4 py-2 rounded-md ${
-                      selectedConnector === connector ? "bg-orange-100 text-orange-500" : "bg-gray-50 hover:bg-gray-100"
-                    }`}
-                    onClick={() => handleConnectorSelect(connector)}
-                  >
-                    {connector}
-                  </button>
+                  <div key={connector} className="mb-2">
+                    <button
+                      type="button"
+                      className={`text-left w-full px-4 py-2 rounded-md ${
+                        selectedConnector === connector
+                          ? "bg-orange-100 text-orange-500"
+                          : "bg-gray-50 hover:bg-gray-100"
+                      }`}
+                      onClick={() => handleConnectorSelect(connector)}
+                    >
+                      {connector}
+                    </button>
+                    {selectedConnector === connector && (
+                      <p className="text-sm text-gray-600 mt-1 px-4">{connectorDescriptions[connector]}</p>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -299,6 +339,9 @@ export default function ConnectorsWiresPage() {
             {/* Connector Type Options */}
             {activeTab === "Connectors" && selectedConnector && (
               <>
+                <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                  <p className="text-sm text-gray-700">{connectorDescriptions[selectedConnector]}</p>
+                </div>
                 {/* Type Selection */}
                 <div className="mb-6">
                   <h2 className="text-base font-medium mb-2">Type</h2>
@@ -368,6 +411,9 @@ export default function ConnectorsWiresPage() {
             {/* Wire Options */}
             {activeTab === "Silicon Wires" && (
               <>
+                <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                  <p className="text-sm text-gray-700">{wireDescriptions["Silicon Wires"]}</p>
+                </div>
                 {/* Size Selection */}
                 <div className="mb-6">
                   <h2 className="text-base font-medium mb-2">Size</h2>
@@ -424,7 +470,6 @@ export default function ConnectorsWiresPage() {
                         {length}
                       </button>
                     ))}
-               
                   </div>
                   {errors.length && <p className="text-red-500 text-sm mt-1">{errors.length.message as string}</p>}
                 </div>
@@ -434,6 +479,9 @@ export default function ConnectorsWiresPage() {
             {/* Harness Wire Options */}
             {activeTab === "Harness Wires" && (
               <>
+                <div className="mb-4 p-3 bg-gray-50 rounded-md">
+                  <p className="text-sm text-gray-700">{wireDescriptions["Harness Wires"]}</p>
+                </div>
                 {/* Size Selection */}
                 <div className="mb-6">
                   <h2 className="text-base font-medium mb-2">Size</h2>
@@ -490,7 +538,6 @@ export default function ConnectorsWiresPage() {
                         {length}
                       </button>
                     ))}
-                    
                   </div>
                   {errors.length && <p className="text-red-500 text-sm mt-1">{errors.length.message as string}</p>}
                 </div>
