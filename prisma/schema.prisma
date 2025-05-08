@@ -226,6 +226,7 @@ model User {
   cart          Cart?
   order         Order[]
   sessions       Session[]
+  services      Service[]
 }
 
 model VerificationToken {
