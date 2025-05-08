@@ -14,8 +14,8 @@ export default function Support() {
   const options: Option[] = [
     { label: "Frequently Asked Questions", content: <FAQSection /> },
     { label: "How to Order", content: <HowToOrder /> },
-    { label: "How to Get a Quote", content: <GetQuote /> },
-    { label: "Videos", content: <p>Video is Loading until enjoy free service</p> },
+    // { label: "How to Get a Quote", content: <GetQuote /> },
+    // { label: "Videos", content: <p>Video is Loading until enjoy free service</p> },
     { label: "Services & Warranty", content: <ServicesWarranty /> },
   ];
 

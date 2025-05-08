@@ -245,12 +245,14 @@ model MarqueeOffers {
 model Service {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   userId      String   @db.ObjectId
-  fileUrl     String?
-  fileType   String?
-  filePublicId String?  // Cloudinary public_id
+  user         User     @relation(fields: [userId], references: [id])
+  fileUrl     String
+  fileType   String
+  filePublicId String  // Cloudinary public_id
   formDetails Json     // Key-value pairs for different service forms
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
 
   @@map("services")
 }

@@ -72,6 +72,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     folder: "services",
     resource_type: "auto", // Automatically detect the resource type
     }
+    if(file.type === "application/pdf" ) {
+      uploadLogic =  {
+        public_id: `${uid()}.${fileExtension}`,
+       resource_type: "raw",
+type: "upload"
+     }
+    }
 
     if(file.type === "application/octet-stream" || file.type === "text/csv") {
       uploadLogic =  {
@@ -91,6 +98,14 @@ export async function POST(request: NextRequest): Promise<Response> {
               NextResponse.json({ error: "Error uploading file to Cloudinary" }, { status: 500 })
             );
           } else {
+            console.log({
+              url: result?.secure_url,
+              secure_url: result?.secure_url,
+              public_id: result?.public_id,
+              name: file.name,
+              type: file.type,
+              size: file.size,
+            })
             resolve(
               NextResponse.json({
                 url: result?.secure_url,
