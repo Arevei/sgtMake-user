@@ -69,10 +69,10 @@ export async function POST(request: Request) {
 
     const service = await db.service.create({
       data: {
-        userId: session.user.id, // Replace with real user id from session/auth
-        fileUrl: fileData.url,
-        filePublicId: fileData.public_id,
-        fileType: fileData.type,
+        userId: session.user.id , // Replace with real user id from session/auth
+        fileUrl: fileData.url || "",
+        filePublicId: fileData.public_id || "",
+        fileType: fileData.type || "",
         formDetails: {
           type: validatedData.serviceType,
           material: validatedData.material,

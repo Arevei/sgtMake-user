@@ -45,12 +45,16 @@ export async function POST(request: Request) {
     if (!session || !session.user || !session.user.id) {
       return error404("Missing user ID in the session.", { user: null });
     }
+    if (!fileData.url || !fileData.public_id || !fileData.type) {
+      throw new Error("Missing file data fields.");
+    }
+    
     const service = await db.service.create({
       data: {
         userId: session.user.id,
-        fileUrl: fileData.url,
-        filePublicId: fileData.public_id,
-        fileType: fileData.type,
+        fileUrl: fileData.url || "",
+        filePublicId: fileData.public_id || "",
+        fileType: fileData.type || "",
         // Store all battery pack form details in the formDetails JSON field
         formDetails: {
           type: "batteryPack", // Identify the form type

@@ -38,10 +38,10 @@ export async function POST(request: Request) {
     // Create a new record in the database using the Service model
     const service = await db.service.create({
       data: {
-        userId: session.user.id,
-        fileUrl: fileData.url,
-        filePublicId: fileData.public_id,
-        fileType: fileData.type,
+        userId: session.user.id ,
+        fileUrl: fileData.url || "",
+        filePublicId: fileData.public_id || "",
+        fileType: fileData.type || "",
         // Store wiring harness form details in the formDetails JSON field
         formDetails: {
           type: "wiringHarness", // Identify the form type

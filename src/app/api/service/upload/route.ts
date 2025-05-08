@@ -98,14 +98,7 @@ type: "upload"
               NextResponse.json({ error: "Error uploading file to Cloudinary" }, { status: 500 })
             );
           } else {
-            console.log({
-              url: result?.secure_url,
-              secure_url: result?.secure_url,
-              public_id: result?.public_id,
-              name: file.name,
-              type: file.type,
-              size: file.size,
-            })
+            
             resolve(
               NextResponse.json({
                 url: result?.secure_url,
