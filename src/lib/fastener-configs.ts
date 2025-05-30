@@ -97,25 +97,25 @@ export const nutConfig: FastenerConfig = {
       required: true,
       options: [
         { id: "hex", name: "Hex" },
-        { id: "nylon", name: "Nylon" },
+        // { id: "nylon", name: "Nylon" },
         { id: "jam", name: "Jam" },
         { id: "wing", name: "Wing" },
         { id: "cap", name: "Cap" },
         { id: "flange", name: "Flange" },
       ],
     },
-    driveType: {
-      label: "Drive Type",
-      required: false,
-      options: [
-        { id: "phillip", name: "Phillip" },
-        { id: "slotted", name: "Slotted" },
-        { id: "combination", name: "Combination" },
-        { id: "allen", name: "Allen" },
-        { id: "torx", name: "Torx" },
-        { id: "hex", name: "Hex" },
-      ],
-    },
+    // driveType: {
+    //   label: "Drive Type",
+    //   required: false,
+    //   options: [
+    //     { id: "phillip", name: "Phillip" },
+    //     { id: "slotted", name: "Slotted" },
+    //     { id: "combination", name: "Combination" },
+    //     { id: "allen", name: "Allen" },
+    //     { id: "torx", name: "Torx" },
+    //     { id: "hex", name: "Hex" },
+    //   ],
+    // },
     size: {
       label: "Size",
       required: true,
@@ -192,7 +192,7 @@ export const brassInsertConfig: FastenerConfig = {
   type: "Brass Insert",
   image: "/images/fasteners/brass-insert.png", // Replace with your actual image path
   basePrice: 0.4, // Base price for the simplest brass insert
-  description: " Threaded inserts that expand inside sheet metal or tubing. Useful for adding strong threads in thin or hollow materials. ",
+  description: "Heat or ultrasonic-fit threaded inserts for plastic parts. Provide strong, reusable threads in 3D prints and molded components.   ",
   options: {
     size: {
       label: "Size",
@@ -212,7 +212,7 @@ export const revNutsConfig: FastenerConfig = {
   type: "Rev Nuts",
   image: "/images/fasteners/rev-nuts.jpeg", // Replace with your actual image path
   basePrice: 0.35, // Base price for the simplest rev nut
-  description: " ",
+  description: "Threaded inserts that expand inside sheet metal or tubing. Useful for adding strong threads in thin or hollow materials. ",
   options: {
     size: {
       label: "Size",
@@ -238,7 +238,7 @@ export const sandOffsConfig: FastenerConfig = {
     size: {
       label: "Size",
       required: true,
-      helpText: "Email us for more sizes which are not available here",
+      helpText: "Note:- Only Hex Type stand offs and Email us for more sizes which are not available here",
       options: [
         { id: "m3", name: "M3" },
         { id: "m4", name: "M4" },
@@ -308,7 +308,7 @@ export const screwConfig: FastenerConfig = {
       required: true,
       options: [
         { id: "phillip", name: "Phillip" },
-        { id: "flat", name: "Flat" },
+        { id: "slotted", name: "Slotted" },
         { id: "combination", name: "Combination" },
         { id: "hex", name: "Hex" },
       ],

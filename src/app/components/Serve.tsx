@@ -23,14 +23,19 @@ export default function Serve() {
             desc: 'We partner with medical device manufacturers to deliver high-precision parts and advanced materials for implants, surgical instruments, and diagnostic equipment.'
         },
         {
-            img: '/brushes.jpg',
-            head: 'Model Sculptures',
-            desc: 'We offer a wide range of materials and services for the creation of intricate sculptures and models, from rapid prototyping to high-precision castings.'
+            img: '/home/Robotics.png',
+            head: 'Robotics',
+            desc: ' We design and manufacture precision components and assemblies for robotic systems, ensuring durability, accuracy, and performance in automation, research, and industrial applications.'
         },
         {
-            img: '/jewellery.jpg',
-            head: 'Jewelry',
-            desc: 'We provide high-quality materials and precision manufacturing solutions to the jewelry industry, including casting, polishing, and finishing.'
+            img: '/home/UAV.png',
+            head: 'UAV (Unmanned Aerial Vehicles)',
+            desc: ' SGTMake supplies lightweight, high-strength parts for UAVs, including structural frames and battery solutions, optimised for flight performance, stability, and endurance.'
+        },
+        {
+            img: '/home/Drones.png',
+            head: 'Drones',
+            desc: ' We build custom drone components such as mounts, enclosures, and wiring systems, tailored for surveillance, mapping, delivery, and other advanced aerial operations.'
         }
     ];
 

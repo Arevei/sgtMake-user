@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react"
 import { SubmissionProgress } from "@/components/submission-progress"
 import { useFormSubmission } from "@/hooks/use-form-submission"
 import { ProtectedButton } from "@/components/protected-button"
+import Image from "next/image"
 
 // Define allowed file types and max size
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
@@ -40,9 +41,9 @@ const designingSchema = baseFormSchema.extend({
 
 // Service options
 const serviceOptions = [
-  { id: "cnc-machining", label: "CNC Machining" },
-  { id: "laser-cutting", label: "Laser Cutting" },
-  { id: "3d-printing", label: "3D Printing" },
+  { id: "cnc-machining", label: "CNC Machining",image:"/services/CNC-Machining.png" },
+  { id: "laser-cutting", label: "Laser Cutting" ,image:"/services/laser-cutting.png" },
+  { id: "3d-printing", label: "3D Printing" ,image:"/services/threeD-printing.png" },
 ]
 
 // Material options
@@ -142,6 +143,7 @@ function ManufacturingServices(props: ManufacturingServicesProps) {
 
   const handleServiceChange = (service: string) => {
     setActiveService(service)
+    setFile(null);
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,6 +227,18 @@ function ManufacturingServices(props: ManufacturingServicesProps) {
     await handleFormSubmit(data, file)
   }
 
+  const renderImage = () => {
+    switch (activeService) {
+      case "cnc-machining":
+        return "/services/CNC-Machining.png"
+      case "laser-cutting":
+        return "/services/laser-cutting.png"
+      case "3d-printing":
+       return "/services/threeD-printing.png"
+      default:
+        return ""
+    }
+  }
   // Render service-specific form fields
   const renderServiceFields = () => {
     switch (activeService) {
@@ -417,7 +431,7 @@ function ManufacturingServices(props: ManufacturingServicesProps) {
       ) : (
         <>
           {/* Service Selection */}
-          <div className="flex flex-wrap gap-4 my-6 max-w-6xl mx-auto px-3 md:px-6">
+          <div className="flex flex-wrap gap-4 my-6 max-w-5xl mx-auto px-3 md:px-6">
             {serviceOptions.map((service) => (
               <button
                 key={service.id}
@@ -433,9 +447,14 @@ function ManufacturingServices(props: ManufacturingServicesProps) {
             ))}
           </div>
 
-          <form id="serviceForm" ref={formRef} onSubmit={handleSubmit(onSubmit)} className="my-6 max-w-6xl mx-auto px-3 md:px-6 pb-20">
+         
+
+          <form id="serviceForm" ref={formRef} onSubmit={handleSubmit(onSubmit)} className="my-6 max-w-5xl mx-auto px-3 md:px-6 pb-20">
             {/* File Upload */}
-            <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#FAFAFA] mb-6 flex flex-col items-center justify-center">
+            <div className="my-2">
+            <Image src={renderImage()} width={1000} className="w-full h-96 " alt="services image" height={300} />
+          </div>
+            <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#f5f3f3] mb-6 flex flex-col items-center justify-center">
               <input
                 ref={fileInputRef}
                 type="file"

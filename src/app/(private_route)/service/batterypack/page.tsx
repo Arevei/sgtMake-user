@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react"
 import { SubmissionProgress } from "@/components/submission-progress"
 import { useFormSubmission } from "@/hooks/use-form-submission"
 import { ProtectedButton } from "@/components/protected-button"
+import Image from "next/image"
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024 // 100MB
 const ALLOWED_FILE_TYPES = ["application/pdf", "application/vnd.ms-excel", "application/msword", "image/", "model/step"]
@@ -234,7 +235,10 @@ function BatteryPackForm(props: BatteryPackFormProps) {
       ) : (
         <>
           {/* File Upload */}
-          <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#FAFAFA] mb-6 flex flex-col items-center justify-center">
+          <div className="my-2">
+            <Image src="/services/Battery-Packs.png" width={1000} className="w-full h-96 " alt="services image" height={300} />
+          </div>
+          <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#f5f3f3] mb-6 flex flex-col items-center justify-center">
             <input
               ref={fileInputRef}
               type="file"

@@ -195,13 +195,22 @@ export default function ContactForm() {
 
             {/* Shanghai Location */}
             <div className="relative rounded-2xl overflow-hidden h-40">
-              <Image src="/china.png" alt="Shanghai" fill className="object-cover" />
+              <Image src="/contact/australia.avif" alt="Shanghai" fill className="object-cover" />
               <div className="absolute bottom-4 left-4 bg-white py-2 px-4 rounded-full flex items-center gap-2">
-                <span className="font-medium">Shang Hai, China</span>
+                <span className="font-medium">Sydney,Australia</span>
                 <ArrowUpRight size={16} />
               </div>
             </div>
+            <div className="relative rounded-2xl overflow-hidden h-48">
+            <Image src="/contact/Europe.webp" alt="London" fill className="object-cover" />
+            <div className="absolute bottom-4 left-4 bg-white py-2 px-4 rounded-full flex items-center gap-2">
+              <span className="font-medium">Europe</span>
+              <ArrowUpRight size={16} />
+            </div>
           </div>
+          </div>
+
+          
 
           {/* Contact Information */}
           <div className="bg-gray-50 rounded-2xl p-6">

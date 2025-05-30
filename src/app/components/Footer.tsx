@@ -56,10 +56,10 @@ const Footer = () => {
         <div>
           <h3 className="font-semibold mb-3">More</h3>
           <ul className="text-sm space-y-2">
-            <li><Link href="/checkout">Cart</Link></li>
+            <li><Link href="/privacy-policy">Privacy Policy</Link></li>
             <li><Link href="/location">Location</Link></li>
-            <li><Link href="/track-orders">Track Orders</Link></li>
-            <li><Link href="/help-center">Help Center</Link></li>
+            <li><Link href="/orders">Track Orders</Link></li>
+            <li><Link href="/contact">Help Center</Link></li>
           </ul>
         </div>
 
@@ -76,7 +76,7 @@ const Footer = () => {
         © 2025 All Rights Reserved.
       </div>
       <p className="text-sm text-center">
-        Developed & Maintained by <span className="font-bold underline cursor-pointer text-[#86EFAC]">www.arevei.com</span>
+        Developed & Maintained by <Link href="https://www.arevei.com/" className="font-bold underline cursor-pointer text-[#86EFAC]">www.arevei.com</Link>
       </p>
     </footer>
   );

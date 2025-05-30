@@ -184,12 +184,13 @@ export default function FastenerSelector({ config, activeCategory }: FastenerSel
               transition={{ duration: 0.2 }}
               className="space-y-2"
             >
+                {optionConfig.helpText && <span className="text-xs text-gray-700 font-semibold">{optionConfig.helpText}</span>}
+
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-medium">
                   {optionConfig.label}
                   {optionConfig.required && <span className="text-red-500 ml-1">*</span>}
                 </h2>
-                {optionConfig.helpText && <span className="text-xs text-gray-500">{optionConfig.helpText}</span>}
               </div>
 
               <div className="flex flex-wrap gap-2">

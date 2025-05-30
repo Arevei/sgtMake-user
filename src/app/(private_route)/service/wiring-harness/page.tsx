@@ -226,7 +226,7 @@ function WiringHarnessForm(props: WiringHarnessFormProps) {
       ) : (
         <>
           {/* File Upload */}
-          <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#FAFAFA] mb-6 flex flex-col items-center justify-center">
+          <div className="border border-gray-300 h-56 md:h-96 rounded-xl text-center bg-[#f5f3f3] mb-6 flex flex-col items-center justify-center">
             <input
               ref={fileInputRef}
               type="file"

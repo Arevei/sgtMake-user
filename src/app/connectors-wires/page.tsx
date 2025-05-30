@@ -10,6 +10,7 @@ import { useAddFastenerToCart } from "@/api-hooks/cart/add-fastener-to-cart"
 import { useQueryClient } from "@tanstack/react-query"
 import { useSession } from "next-auth/react"
 import { getCookie, setCookie } from "cookies-next"
+import Image from "next/image"
 
 type TabType = "Harness Wires" | "Silicon Wires" | "Connectors"
 type ConnectorType =
@@ -247,37 +248,73 @@ export default function ConnectorsWiresPage() {
   ]
 
   // Connector descriptions from documentation
-  const connectorDescriptions: Record<ConnectorType, string> = {
-    "QS 8":
-      "High-current anti-spark connector, commonly used in battery packs and powertrains for electric vehicles, drones, and robotics.",
-    "QS 10":
-      "Heavy-duty version of QS8 with larger terminals. Suitable for higher voltage and current EV systems, industrial motors, and large battery modules.",
-    "Bullet Connectors":
-      "Simple plug-and-play connectors for quick connections in low to medium power applications like RC models, LED strips, and DIY electronics.",
-    "Chogory Connectors":
-      "Waterproof automotive-style connectors widely used in EV wiring harnesses and battery systems. Known for secure locking and durability.",
-    "Anderson Connectors":
-      "High-current, genderless power connectors ideal for modular battery systems, forklifts, and industrial power equipment.",
-    "Tyco Connectors":
-      "Automotive-grade connectors from TE Connectivity. Common in OEM wiring harnesses, offering high vibration resistance and secure mating.",
-    "Furukawa Connectors":
-      "Premium Japanese connectors used in automotive and EV wiring harnesses. Known for precision, high reliability, and weather resistance.",
-    "ZT2023-A":
-      "Compact, multi-pin automotive/industrial connector designed for high-density applications with vibration-proof locking.",
-    "XT90 Connectors":
-      "Popular high-current connectors used in drones, e-bikes, and DIY EVs. Easy to solder and known for their strong, stable connections.",
-    "26 Pin Superseal":
-      "Sealed multi-pin connector with 26 terminals. Ideal for ECUs, BMS, and sensor modules in harsh environments requiring waterproofing.",
-    "34 Pin Superseal":
-      "Expanded version of the Superseal connector with 34 terminals. Used for complex harnessing in EVs, controllers, and industrial equipment.",
+  const connectorDescriptions: Record<ConnectorType, { images: string; description: string }> = {
+    "QS 8": {
+      images: "/Connectors/QS8.png",
+      description:
+        "High-current anti-spark connector, commonly used in battery packs and powertrains for electric vehicles, drones, and robotics.",
+    },
+    "QS 10": {
+      images: "/Connectors/QS10-connectors.png",
+      description:
+        "Heavy-duty version of QS8 with larger terminals. Suitable for higher voltage and current EV systems, industrial motors, and large battery modules.",
+    },
+    "Bullet Connectors": {
+      images: "/Connectors/Bullet-Connector-8-mm.jpg",
+      description:
+        "Simple plug-and-play connectors for quick connections in low to medium power applications like RC models, LED strips, and DIY electronics.",
+    },
+    "Chogory Connectors": {
+      images: "/Connectors/Chogory-connector.jpg",
+      description:
+        "Waterproof automotive-style connectors widely used in EV wiring harnesses and battery systems. Known for secure locking and durability.",
+    },
+    "Anderson Connectors": {
+      images: "/Connectors/sb50-anderson.jpg",
+      description:
+        "High-current, genderless power connectors ideal for modular battery systems, forklifts, and industrial power equipment.",
+    },
+    "Tyco Connectors": {
+      images: "/Connectors/Tyco-amp-superseal.jpg",
+      description:
+        "Automotive-grade connectors from TE Connectivity. Common in OEM wiring harnesses, offering high vibration resistance and secure mating.",
+    },
+    "Furukawa Connectors": {
+      images: "/Connectors/Furukawa-Connectors.png",
+      description:
+        "Premium Japanese connectors used in automotive and EV wiring harnesses. Known for precision, high reliability, and weather resistance.",
+    },
+    "ZT2023-A": {
+      images: "/Connectors/ZT2023-A.jpg",
+      description:
+        "Compact, multi-pin automotive/industrial connector designed for high-density applications with vibration-proof locking.",
+    },
+    "XT90 Connectors": {
+      images: "/Connectors/XT90-connector.jpg",
+      description:
+        "Popular high-current connectors used in drones, e-bikes, and DIY EVs. Easy to solder and known for their strong, stable connections.",
+    },
+    "26 Pin Superseal": {
+      images: "/Connectors/26-PIN-Superseal.jpg",
+      description:
+        "Sealed multi-pin connector with 26 terminals. Ideal for ECUs, BMS, and sensor modules in harsh environments requiring waterproofing.",
+    },
+    "34 Pin Superseal": {
+      images: "/Connectors/34-PIN-superseal-set.jpg",
+      description:
+        "Expanded version of the Superseal connector with 34 terminals. Used for complex harnessing in EVs, controllers, and industrial equipment.",
+    },
   }
+  
 
   // Wire descriptions from documentation
   const wireDescriptions = {
     "Harness Wires":
-      "Reliable and easy-to-use PVC insulated wires perfect for internal wiring in vehicles, appliances, machinery, or custom projects. Available in multiple sizes and colors, these wires are ideal for making neat, color-coded wiring harnesses.",
+     { images: "/Connectors/harness-wires.png",
+      description: "Reliable and easy-to-use PVC insulated wires perfect for internal wiring in vehicles, appliances, machinery, or custom projects. Available in multiple sizes and colors, these wires are ideal for making neat, color-coded wiring harnesses."},
     "Silicon Wires":
-      "Flexible, heat-resistant wires designed for demanding environments like electric vehicles, robotics, battery packs, and embedded electronics. With high-temperature silicone insulation, they're perfect for applications where durability and flexibility matter.",
+     {images: "/Connectors/silicon-wires.jpg",
+      description: "Flexible, heat-resistant wires designed for demanding environments like electric vehicles, robotics, battery packs, and embedded electronics. With high-temperature silicone insulation, they're perfect for applications where durability and flexibility matter."},
   }
 
   // Watch form values
@@ -325,9 +362,7 @@ export default function ConnectorsWiresPage() {
                     >
                       {connector}
                     </button>
-                    {selectedConnector === connector && (
-                      <p className="text-sm text-gray-600 mt-1 px-4">{connectorDescriptions[connector]}</p>
-                    )}
+                 
                   </div>
                 ))}
               </div>
@@ -339,8 +374,14 @@ export default function ConnectorsWiresPage() {
             {/* Connector Type Options */}
             {activeTab === "Connectors" && selectedConnector && (
               <>
-                <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-700">{connectorDescriptions[selectedConnector]}</p>
+                <div className="mb-4 p-3 bg-gray-50 rounded-md flex flex-col-reverse lg:flex-row">
+                  <div className=" w-full lg:w-1/2 my-auto">
+                  <p className="font-semibold" >Description</p>
+                  <p className="text-sm text-gray-700">{connectorDescriptions[selectedConnector].description}</p>
+                  </div>
+                  <div className=" w-full lg:w-1/2 ">
+                  <Image src={connectorDescriptions[selectedConnector].images} width={700} height={600} alt={selectedConnector}  />
+                  </div>
                 </div>
                 {/* Type Selection */}
                 <div className="mb-6">
@@ -410,11 +451,13 @@ export default function ConnectorsWiresPage() {
 
             {/* Wire Options */}
             {activeTab === "Silicon Wires" && (
-              <>
-                <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-700">{wireDescriptions["Silicon Wires"]}</p>
-                </div>
-                {/* Size Selection */}
+              <div className=" flex flex-col-reverse lg:flex-row">
+                <div className="mb-4 mt-10 lg:mt-0  bg-gray-50 rounded-md ">
+                  <div className=" w-full lg:w-1/2 my-auto">
+                  <p className="font-semibold" >Description</p>
+                  <p className="text-sm text-gray-700">{wireDescriptions["Silicon Wires"].description}</p>
+                  </div>
+                   {/* Size Selection */}
                 <div className="mb-6">
                   <h2 className="text-base font-medium mb-2">Size</h2>
                   <div className="flex flex-wrap gap-2">
@@ -473,17 +516,27 @@ export default function ConnectorsWiresPage() {
                   </div>
                   {errors.length && <p className="text-red-500 text-sm mt-1">{errors.length.message as string}</p>}
                 </div>
-              </>
+                 
+                </div>
+               
+                <div className=" w-full lg:w-1/2 ">
+                  <Image className=" max-w-xs mx-auto lg:ml-auto sticky top-7" src={wireDescriptions["Silicon Wires"].images} width={700} height={600} alt="Silicon Wires"  />
+                </div>
+               
+              </div>
+           
             )}
 
             {/* Harness Wire Options */}
             {activeTab === "Harness Wires" && (
-              <>
-                <div className="mb-4 p-3 bg-gray-50 rounded-md">
-                  <p className="text-sm text-gray-700">{wireDescriptions["Harness Wires"]}</p>
-                </div>
-                {/* Size Selection */}
-                <div className="mb-6">
+              <div className=" flex flex-col-reverse lg:flex-row">
+
+                <div className="mb-4 mt-10 lg:mt-0  bg-gray-50 rounded-md ">
+                  <div className=" w-full lg:w-1/2 my-auto">
+                  <p className="font-semibold" >Description</p>
+                  <p className="text-sm text-gray-700">{wireDescriptions["Harness Wires"].description}</p>
+                  </div>
+                  <div className="mb-6 ">
                   <h2 className="text-base font-medium mb-2">Size</h2>
                   <div className="flex flex-wrap gap-2">
                     {["22 AWG", "20 AWG", "17 AWG"].map((size) => (
@@ -541,7 +594,14 @@ export default function ConnectorsWiresPage() {
                   </div>
                   {errors.length && <p className="text-red-500 text-sm mt-1">{errors.length.message as string}</p>}
                 </div>
-              </>
+                  
+                </div>
+                {/* Size Selection */}
+                <div className=" w-full lg:w-1/2 ">
+                  <Image className=" max-w-xs mx-auto lg:ml-auto sticky top-7" src={wireDescriptions["Harness Wires"].images} width={700} height={600} alt="Harness Wires"  />
+                  </div>
+               
+              </div>
             )}
 
             {/* Common Fields for All Tabs */}
