@@ -315,8 +315,44 @@ export interface OrderResponse {
     via: string | null
   }
 }
+export interface ServiceFormData {
+  serviceType: string
+  material: string
+  surfaceFinish: boolean
+  quantity: number
+  remarks?: string
+  file?: File
+  [key: string]: any
+}
 
-
+export interface ServiceStatus {
+  id: string
+  status: string
+  createdAt: string
+  updatedAt: string
+  userId: string
+  fileUrl: string
+  filePublicId: string
+  fileType: string
+  formDetails: {
+    type: string
+    material: string
+    quantity: number
+    surfaceFinish: boolean
+    remarks?: string
+    [key: string]: any
+  }
+  quotation?: {
+    amount: number
+    currency: string
+    validUntil: string
+    details: string
+  }
+  timeline?: {
+    estimatedCompletion: string
+    productionStartDate?: string
+  }
+}
 export type MarqueeOffersRes = Res & {
   offers: MarqueeOffers[];
 };

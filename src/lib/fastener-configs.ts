@@ -1,37 +1,48 @@
 import type { FastenerConfig } from "@/components/fasteners/fastener-selector"
 
+// First, update the FastenerOption interface to include an optional image property
+// At the top of the file, modify the FastenerOption interface:
+
+export interface FastenerOption {
+  id: string
+  name: string
+  price?: number
+  image?: string // Add this line to include optional image URL
+}
+
 // Bolt configuration
 export const boltConfig: FastenerConfig = {
   type: "Bolt",
-  image: "/images/fasteners/bolts.jpg", // Replace with your actual image path
+  image: "/images/fasteners/bolts.jpg",
   basePrice: 0.5,
-  description:"Threaded fasteners used with nuts or tapped holes. Ideal for creating strong, removable joints in metal frames, machinery, and assemblies. ", // Base price for the simplest bolt
+  description:
+    "Threaded fasteners used with nuts or tapped holes. Ideal for creating strong, removable joints in metal frames, machinery, and assemblies. ",
   options: {
     headType: {
       label: "Head Type",
       required: true,
       options: [
-        { id: "flat", name: "Flat" },
-        { id: "pan", name: "Pan" },
-        { id: "hex", name: "Hex" },
-        { id: "hex-washer", name: "Hex Washer" },
-        { id: "spring-washer", name: "Spring Washer" },
-        { id: "button", name: "Button" },
-        { id: "socket", name: "Socket" },
-        { id: "hex-flange", name: "Hex Flange" },
-        { id: "serrated-head", name: "Serrated Head" },
+        { id: "flat", name: "Flat", image: "/fasteners/Bolts/Head/flat.png" },
+        { id: "pan", name: "Pan", image: "/fasteners/Bolts/Head/pan.png" },
+        { id: "hex", name: "Hex", image: "/fasteners/Bolts/Head/hex.png" },
+        { id: "hex-washer", name: "Hex Washer", image: "/fasteners/Bolts/Head/hex-washer.png" },
+        { id: "spring-washer", name: "Spring Washer", image: "/fasteners/Bolts/Head/spring-washer.png" },
+        { id: "button", name: "Button", image: "/fasteners/Bolts/Head/button.png" },
+        { id: "socket", name: "Socket", image: "/fasteners/Bolts/Head/socket.png" },
+        { id: "hex-flange", name: "Hex Flange", image: "/fasteners/Bolts/Head/hex-flange.png" },
+        { id: "serrated-head", name: "Serrated Head", image: "/fasteners/Bolts/Head/serrated-head.png" },
       ],
     },
     driveType: {
       label: "Drive Type",
       required: true,
       options: [
-        { id: "phillip", name: "Phillip" },
-        { id: "slotted", name: "Slotted" },
-        { id: "combination", name: "Combination" },
-        { id: "allen", name: "Allen" },
-        { id: "torx", name: "Torx" },
-        { id: "hex", name: "Hex" },
+        { id: "phillip", name: "Phillip", image: "/fasteners/Bolts/Drive-Type/phillip.png" },
+        { id: "slotted", name: "Slotted", image: "/fasteners/Bolts/Drive-Type/slotted.png" },
+        { id: "combination", name: "Combination", image: "/fasteners/Bolts/Drive-Type/combination.png" },
+        { id: "allen", name: "Allen", image: "/fasteners/Bolts/Drive-Type/allen.png" },
+        { id: "torx", name: "Torx", image: "/fasteners/Bolts/Drive-Type/torx.png" },
+        { id: "hex", name: "Hex", image: "/fasteners/Bolts/Drive-Type/hex.png" },
       ],
     },
     size: {
@@ -81,27 +92,26 @@ export const boltConfig: FastenerConfig = {
         { id: "nickel-coated", name: "Nickel Coated" },
       ],
     },
-
   },
 }
 
 // Nut configuration
 export const nutConfig: FastenerConfig = {
   type: "Nut",
-  image: "/images/fasteners/nut.jpg", // Replace with your actual image path
+  image: "/images/fasteners/nut.jpg",
   basePrice: 0.3,
-  description: "Hexagonal fasteners paired with bolts. Available in standard, lock, and flange types to provide firm clamping force.  ", // Base price for the simplest nut
+  description:
+    "Hexagonal fasteners paired with bolts. Available in standard, lock, and flange types to provide firm clamping force.  ",
   options: {
     type: {
       label: "Type",
       required: true,
       options: [
-        { id: "hex", name: "Hex" },
-        // { id: "nylon", name: "Nylon" },
-        { id: "jam", name: "Jam" },
-        { id: "wing", name: "Wing" },
-        { id: "cap", name: "Cap" },
-        { id: "flange", name: "Flange" },
+        { id: "hex", name: "Hex", image: "/fasteners/Nuts/hex.png" },
+        { id: "jam", name: "Jam", image: "/fasteners/Nuts/jam.png" },
+        { id: "wing", name: "Wing", image: "/fasteners/Nuts/wing.png" },
+        { id: "cap", name: "Cap", image: "/fasteners/Nuts/cap.png" },
+        { id: "flange", name: "Flange", image: "/fasteners/Nuts/flange.png" },
       ],
     },
     // driveType: {
@@ -152,16 +162,17 @@ export const nutConfig: FastenerConfig = {
 // Washer configuration
 export const washerConfig: FastenerConfig = {
   type: "Washer",
-  image: "/images/fasteners/washer.jpg", // Replace with your actual image path
-  basePrice: 0.15, // Base price for the simplest washer
-  description: " Placed under bolts or nuts to distribute load, prevent loosening, and protect surfaces. Available in flat, spring, and lock types.",
+  image: "/images/fasteners/washer.jpg",
+  basePrice: 0.15,
+  description:
+    " Placed under bolts or nuts to distribute load, prevent loosening, and protect surfaces. Available in flat, spring, and lock types.",
   options: {
     type: {
       label: "Type",
       required: true,
       options: [
-        { id: "flat", name: "Flat" },
-        { id: "spring", name: "Spring" },
+        { id: "flat", name: "Flat", image: "/fasteners/flat-washers.jpg" },
+        { id: "spring", name: "Spring", image: "/fasteners/Spring-Washers.jpg" },
       ],
     },
     size: {
@@ -192,7 +203,8 @@ export const brassInsertConfig: FastenerConfig = {
   type: "Brass Insert",
   image: "/images/fasteners/brass-insert.png", // Replace with your actual image path
   basePrice: 0.4, // Base price for the simplest brass insert
-  description: "Heat or ultrasonic-fit threaded inserts for plastic parts. Provide strong, reusable threads in 3D prints and molded components.   ",
+  description:
+    "Heat or ultrasonic-fit threaded inserts for plastic parts. Provide strong, reusable threads in 3D prints and molded components.   ",
   options: {
     size: {
       label: "Size",
@@ -212,7 +224,8 @@ export const revNutsConfig: FastenerConfig = {
   type: "Rev Nuts",
   image: "/images/fasteners/rev-nuts.jpeg", // Replace with your actual image path
   basePrice: 0.35, // Base price for the simplest rev nut
-  description: "Threaded inserts that expand inside sheet metal or tubing. Useful for adding strong threads in thin or hollow materials. ",
+  description:
+    "Threaded inserts that expand inside sheet metal or tubing. Useful for adding strong threads in thin or hollow materials. ",
   options: {
     size: {
       label: "Size",
@@ -233,7 +246,8 @@ export const sandOffsConfig: FastenerConfig = {
   type: "Stand Offs",
   image: "/images/fasteners/sand-offs.webp", // Replace with your actual image path
   basePrice: 0.45, // Base price for the simplest sand off
-  description: "Spacer fasteners used to create fixed gaps between components. Commonly used in PCBs,electronics, and panel assemblies. ",
+  description:
+    "Spacer fasteners used to create fixed gaps between components. Commonly used in PCBs,electronics, and panel assemblies. ",
   options: {
     size: {
       label: "Size",
@@ -290,27 +304,28 @@ export const sandOffsConfig: FastenerConfig = {
 // Screw configuration
 export const screwConfig: FastenerConfig = {
   type: "Screw",
-  image: "/images/fasteners/screw.jpg", // Replace with your actual image path
-  basePrice: 0.25, // Base price for the simplest screw
-  description: " Self-tapping or machine-threaded fasteners for wood, plastic, or metal. Essential for assembly,electronics, and structural builds. ",
+  image: "/images/fasteners/screw.jpg",
+  basePrice: 0.25,
+  description:
+    " Self-tapping or machine-threaded fasteners for wood, plastic, or metal. Essential for assembly,electronics, and structural builds. ",
   options: {
     headType: {
       label: "Head Type",
       required: true,
       options: [
-        { id: "flat", name: "Flat" },
-        { id: "pan", name: "Pan" },
-        { id: "flange", name: "Flange" },
+        { id: "flat", name: "Flat", image: "/fasteners/Screw/flat.png" },
+        { id: "pan", name: "Pan", image: "/fasteners/Screw/pan.png" },
+        { id: "flange", name: "Flange", image: "/fasteners/Screw/flange.png" },
       ],
     },
     driveType: {
       label: "Drive Type",
       required: true,
       options: [
-        { id: "phillip", name: "Phillip" },
-        { id: "slotted", name: "Slotted" },
-        { id: "combination", name: "Combination" },
-        { id: "hex", name: "Hex" },
+        { id: "phillip", name: "Phillip", image: "/fasteners/Screw/phillip.png" },
+        { id: "slotted", name: "Slotted", image: "/fasteners/Screw/slotted.png" },
+        { id: "combination", name: "Combination", image: "/fasteners/Screw/combination.png" },
+        { id: "hex", name: "Hex", image: "/fasteners/Screw/hex.png" },
       ],
     },
     feature: {

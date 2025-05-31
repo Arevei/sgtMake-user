@@ -7,12 +7,14 @@ import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import FastenerActions from "./fastener-actions"
+import Image from "next/image"
 
 // Define the base fastener type
 export interface FastenerOption {
   id: string
   name: string
   price?: number
+  image?: string // Add this line
 }
 
 // Define the configuration for different fastener types
@@ -166,10 +168,10 @@ export default function FastenerSelector({ config, activeCategory }: FastenerSel
   return (
     <div className="space-y-6">
       {/* Render each option category */}
+      <div className=" flex flex-col-reverse lg:flex-row justify-between" >
+      <div className="space-y-6">
       <AnimatePresence mode="wait">
-      <h2 className="text-lg font-medium ">
-        Description
-      </h2>
+        <h2 className="text-lg font-medium ">Description</h2>
 
         <p className="text-sm text-gray-500 max-w-xl">{config.description}</p>
         {Object.entries(config.options).map(([key, optionConfig]) => {
@@ -184,7 +186,9 @@ export default function FastenerSelector({ config, activeCategory }: FastenerSel
               transition={{ duration: 0.2 }}
               className="space-y-2"
             >
-                {optionConfig.helpText && <span className="text-xs text-gray-700 font-semibold">{optionConfig.helpText}</span>}
+              {optionConfig.helpText && (
+                <span className="text-xs text-gray-700 font-semibold">{optionConfig.helpText}</span>
+              )}
 
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-medium">
@@ -198,22 +202,29 @@ export default function FastenerSelector({ config, activeCategory }: FastenerSel
                   <button
                     key={option.id}
                     type="button"
-                    className={`px-3 py-2 border rounded-md transition text-sm ${
+                    className={`px-3 py-2 border rounded-md transition text-sm flex flex-col items-center ${
                       formValues[key] === option.id
                         ? "bg-orange-500 text-white border-orange-500"
                         : "hover:bg-gray-100 border-gray-300"
                     }`}
                     onClick={() => setValue(key as "quantity" | "remarks", option.id, { shouldValidate: true })}
                   >
-                    {option.name}
+                    {option.image && (
+                      <div className="mb-2 w-12 h-12 flex items-center justify-center">
+                        <img
+                          src={option.image || "/placeholder.svg"}
+                          alt={option.name}
+                          className="max-w-full max-h-full object-contain"
+                        />
+                      </div>
+                    )}
+                    <span>{option.name}</span>
                   </button>
                 ))}
               </div>
 
               {errors[key as keyof typeof errors] && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors[key as keyof typeof errors]?.message as string}
-                </p>
+                <p className="text-red-500 text-sm mt-1">{errors[key as keyof typeof errors]?.message as string}</p>
               )}
             </motion.div>
           )
@@ -263,6 +274,11 @@ export default function FastenerSelector({ config, activeCategory }: FastenerSel
         </div>
         {errors.quantity && <p className="text-red-500 text-sm">{errors.quantity.message as string}</p>}
       </motion.div>
+      </div>
+      <div >
+        <Image src={config.image} width={300} height={300} className=" max-w-[250px] mx-auto w-full sticky top-10" alt={config.type}/>
+      </div>
+      </div>
 
       {/* Remarks */}
       <motion.div

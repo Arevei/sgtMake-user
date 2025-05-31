@@ -1,8 +1,9 @@
 import Container from "@/components/container"
 import ItemSummary from "@/components/orders/item-summary"
+import OrderStatusStepper from "@/components/orders/order-status-stepper"
 import { getOrder } from "@/lib/api/order/get-order"
 import { formatCurrency, formateDateString } from "@/lib/utils"
-import { Mail } from "lucide-react"
+import { Mail } from 'lucide-react'
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
@@ -16,6 +17,10 @@ const Order = async ({ params }: { params: { oid: string } }) => {
   const subtotal = order.order.orderItems.reduce((acc, curr) => acc + (curr.basePrice ?? 0), 0) || 0
   const total = order.order.orderItems.reduce((acc, curr) => acc + curr.offerPrice, 0) || 0
 
+  // Determine order status - this should come from your database
+  // For now, we'll derive it from the order data
+  const orderStatus = order.order.payment_verified ? "processing" : "placed"
+
   return (
     <Container>
       <div className="mx-auto w-full max-w-3xl rounded-md bg-white p-5">
@@ -24,6 +29,14 @@ const Order = async ({ params }: { params: { oid: string } }) => {
           Ordered on: <span className="font-medium text-black">{formateDateString(order.order.orderDate)}</span>
         </p>
         <hr className="my-5" />
+        
+        {/* Order Status Stepper */}
+        <OrderStatusStepper 
+          currentStatus={orderStatus} 
+          paymentVerified={order.order.payment_verified} 
+          orderDate={new Date(order.order.orderDate)} 
+        />
+        
         {order.order.orderItems.map((orderItem, i) => {
           // For custom products, use a different link or no link
           if (orderItem.isCustomProduct) {
