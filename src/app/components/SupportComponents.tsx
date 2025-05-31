@@ -117,7 +117,7 @@ export function ServicesWarranty() {
       />
       <ServicesWarrantyCard
         Question="05. Warranty Registration Information"
-        Answer="To ensure prompt service and to activate your warranty, we encourage you to register your product within [Number] days of purchase. Warranty registration can be completed online through our website at [Website Address] or by submitting the enclosed registration card. Registering your product allows us to keep you informed about product updates, recalls, and special offers. It also streamlines the warranty claim process, ensuring faster and more efficient service."
+        Answer="To ensure prompt service and to activate your warranty, we encourage you to register your product within 2 days of purchase. Warranty registration can be completed online through our website or by submitting the enclosed registration card. Registering your product allows us to keep you informed about product updates, recalls, and special offers. It also streamlines the warranty claim process, ensuring faster and more efficient service."
       />
 
       {/* Refund Section */}
