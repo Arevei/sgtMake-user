@@ -27,7 +27,7 @@ export default function Support() {
           <h2 className="text-2xl font-semibold my-4 ml-14">Support</h2>
 
           <div className="flex flex-col md:flex-row ">
-        <aside className="md:w-1/4 border-r p-4 sticky top-10 h-full">
+        <aside className="md:w-1/4 border-r p-4 static md:sticky top-10 h-full">
           <nav>
             <ul className="space-y-2 4">
               {options.map((option) => (

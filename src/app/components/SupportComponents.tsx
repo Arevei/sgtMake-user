@@ -13,7 +13,7 @@ interface FAQ {
 const faqs: FAQ[] = [
   { question: "What is SGTMake?", answer: "SGTMake is a leading provider of custom cable solutions..." },
   { question: "What industries do you serve?", answer: "We serve industries such as automotive, aerospace, and telecommunications..." },
-  { question: "How can I contact your customer support?", answer: "You can contact us via email at support@sgtmake.com or call us at +1234567890..." },
+  { question: "How can I contact your customer support?", answer: "You can contact us via email at support@sgtmake.com or call us at +91 9462223735" },
   { question: "What are your business hours?", answer: "Our business hours are Monday to Friday, 9 AM - 5 PM..." },
   { question: "How can I track my orders?", answer: "You can track your orders using the tracking ID sent to your email..." },
 ];
@@ -27,7 +27,6 @@ export function FAQSection() {
 
   return (
     <div className="container mx-auto p-4 lg:p-8">
-      <p className="text-gray-600 mb-6">Please fill in the part number according to your cable requirements.</p>
       <div className="space-y-4">
         {faqs.map((faq, index) => (
           <div key={index} className="border-b pb-2">
@@ -89,7 +88,7 @@ export function ServicesWarranty() {
 
        {/* Payment Section */}
        <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-xl font-semibold mb-3 text-gray-800">Payment</h3>
+        <h3 className="text-xl font-semibold mb-3 text-gray-800">01. Payment</h3>
         <p className="text-gray-700">
           Full payment is required before production begins. We accept bank transfers, UPI, and other approved digital
           methods. Your order will only move to production after payment confirmation. For custom or bulk orders,
@@ -99,7 +98,7 @@ export function ServicesWarranty() {
 
       {/* Warranty Section */}
       <div className="bg-blue-50 p-6 rounded-lg">
-        <h3 className="text-xl font-semibold mb-3 text-blue-800">Warranty</h3>
+        <h3 className="text-xl font-semibold mb-3 text-blue-800">02. Warranty</h3>
         <p className="text-gray-700">
           All products are covered under a limited warranty ranging from 3 to 12 months, depending on the product type.
           This warranty applies only to manufacturing defects. It does not cover wear and tear, accidental damage, or
@@ -109,21 +108,21 @@ export function ServicesWarranty() {
       </div>
 
       <ServicesWarrantyCard
-        Question="02. Coverage Details"
+        Question="03. Coverage Details"
         Answer="Our warranty covers defects in materials and workmanship that arise during normal use. This includes failures due to faulty components or manufacturing errors. We will repair or replace the defective part or product, ensuring it functions according to its intended specifications. If a direct replacement is not available, we will provide a comparable product or component. This warranty is limited to the original purchaser and is non-transferable."
       />
       <ServicesWarrantyCard
-        Question="03. Exclusion"
+        Question="04. Exclusion"
         Answer="While we stand behind the quality of our products, certain exclusions apply to our warranty. Damage caused by misuse, abuse, neglect, accidents, unauthorized repairs, or modifications is not covered. Normal wear and tear, cosmetic damage, and damage resulting from improper installation or environmental factors are also excluded. Additionally, consumable items and accessories are not covered under this warranty. Please refer to the product manual for detailed information on proper usage and maintenance."
       />
       <ServicesWarrantyCard
-        Question="04. Warranty Registration Information"
+        Question="05. Warranty Registration Information"
         Answer="To ensure prompt service and to activate your warranty, we encourage you to register your product within [Number] days of purchase. Warranty registration can be completed online through our website at [Website Address] or by submitting the enclosed registration card. Registering your product allows us to keep you informed about product updates, recalls, and special offers. It also streamlines the warranty claim process, ensuring faster and more efficient service."
       />
 
       {/* Refund Section */}
       <div className="bg-red-50 p-6 rounded-lg">
-        <h3 className="text-xl font-semibold mb-3 text-red-800">Refund</h3>
+        <h3 className="text-xl font-semibold mb-3 text-red-800">06. Refund</h3>
         <p className="text-gray-700">
           Refunds are only available if cancellation is requested before the production process begins. Once production
           has started, no refunds will be issued. If there is a verified manufacturing defect or order error from our
@@ -133,7 +132,7 @@ export function ServicesWarranty() {
 
       {/* Replacement Section */}
       <div className="bg-green-50 p-6 rounded-lg">
-        <h3 className="text-xl font-semibold mb-3 text-green-800">Replacement</h3>
+        <h3 className="text-xl font-semibold mb-3 text-green-800">07. Replacement</h3>
         <p className="text-gray-700">
           If you receive a damaged, defective, or incorrect product, please report the issue within 7 days of delivery.
           After verifying the claim, we will offer a free replacement or correction. Products must be unused and
@@ -146,9 +145,9 @@ export function ServicesWarranty() {
 
 function ServicesWarrantyCard({ Question, Answer }: ServicesWarrantyCardProps) {
   return (
-    <div className="p-2">
+    <div className="p-2 sm:p-6">
       <div className="text-xl font-semibold">{Question}</div>
-      <div className="text-sm font-normal mt-1">{Answer}</div>
+      <div className=" font-normal mt-1">{Answer}</div>
     </div>
   );
 }

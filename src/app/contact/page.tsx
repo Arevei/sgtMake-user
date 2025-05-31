@@ -80,7 +80,7 @@ export default function ContactForm() {
         {/* Left Column - Form */}
         <div>
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Contact with Our Specialized Team</h1>
-          <p className="text-gray-600 mb-8">Please fill in the part number according to your cable requirements.</p>
+          <p className="text-gray-600 mb-8">Please fill out the form below with your details so we can assist you better.</p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -172,10 +172,10 @@ export default function ContactForm() {
         </div>
 
         {/* Right Column - Locations and Contact Info */}
-        <div className="space-y-6">
+        <div className="space-y-6 text-sm md:text-base">
           {/* London Location */}
           <div className="relative rounded-2xl overflow-hidden h-48">
-            <Image src="/london.png" alt="London" fill className="object-cover" />
+            <Image src="/london.png" alt="London"  width={800} height={300} className="object-cover h-full" />
             <div className="absolute bottom-4 left-4 bg-white py-2 px-4 rounded-full flex items-center gap-2">
               <span className="font-medium">London, UK</span>
               <ArrowUpRight size={16} />
@@ -186,7 +186,7 @@ export default function ContactForm() {
           <div className="grid grid-cols-2 gap-4">
             {/* California Location */}
             <div className="relative rounded-2xl overflow-hidden h-40">
-              <Image src="/usa.png" alt="California" fill className="object-cover" />
+              <Image src="/usa.png" alt="usa" width={500} height={300} className="object-cover h-full" />
               <div className="absolute bottom-4 left-4 bg-white py-2 px-4 rounded-full flex items-center gap-2">
                 <span className="font-medium">California, USA</span>
                 <ArrowUpRight size={16} />
@@ -195,14 +195,14 @@ export default function ContactForm() {
 
             {/* Shanghai Location */}
             <div className="relative rounded-2xl overflow-hidden h-40">
-              <Image src="/contact/australia.avif" alt="Shanghai" fill className="object-cover" />
+              <Image src="/contact/australia.avif" width={500} height={500} alt="australia"  className="object-cover h-full" />
               <div className="absolute bottom-4 left-4 bg-white py-2 px-4 rounded-full flex items-center gap-2">
-                <span className="font-medium">Sydney,Australia</span>
+                <span className="font-medium">Sydney, Australia</span>
                 <ArrowUpRight size={16} />
               </div>
             </div>
             <div className="relative rounded-2xl overflow-hidden h-48">
-            <Image src="/contact/Europe.webp" alt="London" fill className="object-cover" />
+            <Image src="/contact/Europe.webp" alt="Europe" width={500} height={300} className="object-cover h-full" />
             <div className="absolute bottom-4 left-4 bg-white py-2 px-4 rounded-full flex items-center gap-2">
               <span className="font-medium">Europe</span>
               <ArrowUpRight size={16} />
@@ -213,10 +213,10 @@ export default function ContactForm() {
           
 
           {/* Contact Information */}
-          <div className="bg-gray-50 rounded-2xl p-6">
-            <div className="grid grid-cols-2 gap-6">
+         
+            <div className=" flex flex-col md:grid grid-cols-1  gap-x-3 gap-y-6">
               {/* Email */}
-              <Link href="mailto:business@sgtmake.com" className="flex items-center gap-3">
+              <Link  href="mailto:business@sgtmake.com" className="flex items-center gap-3">
                 <div className="bg-orange-100 p-3 rounded-full">
                   <Mail className="h-5 w-5 text-orange-500" />
                 </div>
@@ -314,7 +314,7 @@ export default function ContactForm() {
                 </div>
               </div>
             </div>
-          </div>
+          
         </div>
       </div>
     </div>

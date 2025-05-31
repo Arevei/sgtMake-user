@@ -57,7 +57,7 @@ const Footer = () => {
           <h3 className="font-semibold mb-3">More</h3>
           <ul className="text-sm space-y-2">
             <li><Link href="/privacy-policy">Privacy Policy</Link></li>
-            <li><Link href="/location">Location</Link></li>
+            {/* <li><Link href="/location">Location</Link></li> */}
             <li><Link href="/orders">Track Orders</Link></li>
             <li><Link href="/contact">Help Center</Link></li>
           </ul>
@@ -66,14 +66,14 @@ const Footer = () => {
         {/* Subscribe */}
         <div className=" text-left">
           <h3 className="font-semibold mb-3">Subscribe</h3>
-          <input type="email" placeholder="Enter Email" className="w-full p-2 mb-2 rounded bg-transparent border-white border-2" />
+          <input type="email" placeholder="Enter Email" className="w-full p-2 mb-2 rounded bg-transparent border-1 focus:ring-2 ring-orange-500" />
           <button className="bg-orange-500 px-4 py-2 rounded">Submit</button>
         </div>
       </div>
 
       {/* Footer bottom */}
       <div className="text-center mt-6 border-t border-gray-700 pt-4 text-sm">
-        © 2025 All Rights Reserved.
+        © {new Date().getFullYear()} All Rights Reserved.
       </div>
       <p className="text-sm text-center">
         Developed & Maintained by <Link href="https://www.arevei.com/" className="font-bold underline cursor-pointer text-[#86EFAC]">www.arevei.com</Link>

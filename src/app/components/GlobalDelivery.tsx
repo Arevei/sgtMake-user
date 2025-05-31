@@ -5,9 +5,9 @@ export default function DeliveryBanner() {
         <p className="text-gray-400 mt-3 max-w-lg mx-auto">
           We offer reliable delivery services to customers in over 200 countries, facilitated by our network of trusted agents.
         </p>
-        <button className="mt-6 bg-[#ff4500] text-white font-semibold px-6 py-3 rounded-full hover:bg-[#e63e00] transition">
+        {/* <button className="mt-6 bg-[#ff4500] text-white font-semibold px-6 py-3 rounded-full hover:bg-[#e63e00] transition">
           Explore Destinations
-        </button>
+        </button> */}
       </div>
     );
   }
