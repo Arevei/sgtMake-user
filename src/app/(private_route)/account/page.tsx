@@ -2,7 +2,7 @@ import Container from "@/components/container";
 import LinkButton from "@/components/shared/link-button";
 import { authOptions } from "@/lib/auth";
 import { AccountCardProps } from "@/lib/types/types";
-import { ChevronRight, MapPin, Package, User2 } from "lucide-react";
+import { ChevronRight, MapPin, Package, Quote, User2 } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -35,6 +35,9 @@ const Account = async () => {
         </Link>
         <Link href="/account/address">
           <Card icon={<MapPin />} title="Manage Address" />
+        </Link>
+        <Link href="/account/services">
+          <Card icon={<Quote />} title="My Quotations" />
         </Link>
       </div>
       <hr className="my-5 border-gray-300" />
