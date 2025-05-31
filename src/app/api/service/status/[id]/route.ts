@@ -76,17 +76,20 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         filteredUpdateData[key] = updateData[key]
       }
     })
-
+    const safeFormDetails =
+    typeof existingService.formDetails === "object" && existingService.formDetails !== null
+      ? existingService.formDetails
+      : {}
     // Update service
     const updatedService = await db.service.update({
       where: {
         id: serviceId,
       },
       data: {
-        formDetails: {
-          ...existingService.formDetails,
-          remarks: updateData.remarks || existingService.formDetails.remarks,
-        },
+formDetails: {
+  ...safeFormDetails,
+  remarks: updateData.remarks ? updateData.remarks: "",
+}
       },
     })
 
